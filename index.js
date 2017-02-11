@@ -4,9 +4,53 @@ const path = require('path')
 
 // Генерация случайного шаблона ------------------------------------------------
 ;(function runTime() {
-    let { links, templates } = loadTemplates('./templates.yml')
-    console.log(getRandomTemplate(templates))
+    let { templates, links } = loadTemplates('./templates.yml')
+
+    let template = getRandomTemplate(templates)
+    let sentence = fillTemplate(template, links)
+
+    console.log(sentence)
 })()
+
+/** ----------------------------------------------------------------------------
+ * Подстановка случайных слов из списка в шаблон
+ * @param  {string} template Шаблон для подстановки
+ * @param  {Map}    links    Списки слов
+ * @return {string}          Готвое предложение
+ */
+
+function fillTemplate(template, links) {
+    let newTemplate = template
+    let splittedTemplate = template.split(' ')
+    for (var i = 0; i < splittedTemplate.length; i++) {
+        let splittedTemplateRp = splittedTemplate[i].replace(/[^_А-я]/g, '')
+        if (!links.has(splittedTemplateRp)) continue
+
+        // Получаем случайное слово из списка
+        let words = links.get(splittedTemplateRp)
+        let randomWord = words[Math.random() * words.length | 0]
+
+        if (/->$/g.test(splittedTemplate[i])) {
+            // Здесь нужно будет склонять и менять род прилагательного,
+            // в зависимости от следующего существительного
+            splittedTemplate[i] = splittedTemplate[i].slice(0, -2)
+        } else if (/^<-/g.test(splittedTemplate[i])) {
+            // Здесь — в зависимости от предыдущего
+            splittedTemplate[i] = splittedTemplate[i].slice(2)
+        }
+
+        // Удаляем комментарии
+        randomWord = randomWord.replace(/\s+?\#.*$/, '')
+
+        // Вставляем полученное слово в шаблон
+        let escapedRegExp = splittedTemplateRp
+            .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+        let regExp = new RegExp(escapedRegExp)
+        newTemplate = newTemplate.replace(regExp, randomWord)
+    }
+
+    return cleanSentence(newTemplate)
+}
 
 /** ----------------------------------------------------------------------------
  * Получение случайного шаблона для предложения
@@ -32,7 +76,7 @@ function getRandomTemplate(templates) {
         // пропускаем этот шаблон случайным образом
         for (let item of parts) {
             if(typeof item === 'object' && item['вероятность'] != null) {
-                if(Math.random() <= getChance(item['вероятность'])) {
+                if(Math.random() > getChance(item['вероятность'])) {
                     delete splittedTemplate[i]
                     continue tplLoop
                 }
@@ -81,7 +125,33 @@ function loadTemplates(filename) {
         }
     })
 
-    return { links, templates }
+    return { templates, links }
+}
+
+/** ----------------------------------------------------------------------------
+ * Приведение предложения к нормальному виду
+ * @param  {string} string Предложение
+ * @return {string}        Подготовленное предложение
+ */
+function cleanSentence(string) {
+    // Удаляем от ненужных пробелов
+    string = string.trim()
+    // Ставим заглавную букву в начале предложения
+    string = string[0].toUpperCase() + string.substr(1)
+    // Добавляем точку в конец предложения
+    if (!/[.!?]$/.test(string)) {
+        string = string + '.'
+    }
+
+    return string
+        // Удаляем пробелы перед знаками препинания
+        .replace(/\s+([.,!?])(\s+?)/g, '$1$2')
+        // Удаляем двойные пробелы
+        .replace(/\s\s+/g, ' ')
+        // Удаляем двойные запятые
+        .replace(/,,+/g, ',')
+        // Удаление стрелок
+        .replace(/\s+<-|->\s+/g, ' ')
 }
 
 /** ----------------------------------------------------------------------------
