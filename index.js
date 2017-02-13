@@ -1,16 +1,57 @@
-const yaml = require('js-yaml')
-const fs   = require('fs')
-const path = require('path')
+const yaml    = require('js-yaml')
+const fs      = require('fs')
+const path    = require('path')
+// Экспорт ---------------------------------------------------------------------
+module.exports = {
+    loadTemplates,
+    loadLinks,
+    getRandomTemplate,
+    fillTemplate,
+    inflectWords,
+    cleanSentence,
+    getFlections,
+}
 
-// Генерация случайного шаблона ------------------------------------------------
-;(function runTime() {
-    let { templates, links } = loadTemplates('./templates.yml')
+/** ----------------------------------------------------------------------------
+ * Изменение родов слов
+ * @param  {string} sentence Предложение со словами, требующими изменения рода
+ * @return {string}          Обработанное предложение
+ */
+function inflectWords(sentence, flections) {
+    let splittedSentence = sentence.split(' ')
 
-    let template = getRandomTemplate(templates)
-    let sentence = fillTemplate(template, links)
+    for (let i = 0; i < splittedSentence.length; i++) {
+        if (!/^<-|->$/g.test(splittedSentence[i])) {
+            continue
+        }
 
-    console.log(sentence)
-})()
+        // Смена рода прилагательного в зависимости
+        // от следующего или предыдущего существительного
+        let keyWordIndex = i
+        if (/->$/g.test(splittedSentence[i])) {
+            keyWordIndex++
+        } else if (/^<-/g.test(splittedSentence[i])) {
+            keyWordIndex--
+        }
+
+        // Если в ключевом слове нет указания рода, ничего не делаем
+        if (/[А-я]#[мжс]/.test(splittedSentence[keyWordIndex]) === false) {
+            continue
+        }
+        // Получаем род для изменения окончания
+        let gender = splittedSentence[keyWordIndex]
+            .replace(/[^#]*#([^\s]*)/, '$1')
+
+        // Меняем окончание
+        splittedSentence[i] = splittedSentence[i].replace(/^<-|->$/g, '')
+        splittedSentence[i] = setInflect(splittedSentence[i], gender, flections)
+    }
+
+    let newSentence = splittedSentence.join(' ')
+    newSentence = newSentence.replace(/([А-я])\s?#\s?[мжс]([^А-я]|$)/g, '$1$2')
+
+    return newSentence.replace(/\s+<-|->\s+/g, ' ')
+}
 
 /** ----------------------------------------------------------------------------
  * Подстановка случайных слов из списка в шаблон
@@ -30,17 +71,8 @@ function fillTemplate(template, links) {
         let words = links.get(splittedTemplateRp)
         let randomWord = words[Math.random() * words.length | 0]
 
-        if (/->$/g.test(splittedTemplate[i])) {
-            // Здесь нужно будет склонять и менять род прилагательного,
-            // в зависимости от следующего существительного
-            splittedTemplate[i] = splittedTemplate[i].slice(0, -2)
-        } else if (/^<-/g.test(splittedTemplate[i])) {
-            // Здесь — в зависимости от предыдущего
-            splittedTemplate[i] = splittedTemplate[i].slice(2)
-        }
-
-        // Удаляем комментарии
-        randomWord = randomWord.replace(/\s+?\#.*$/, '')
+        // Приклеиваем комментарии с родом
+        randomWord = randomWord.replace(/\s+?\#\s+?(.*)$/, '#$1')
 
         // Вставляем полученное слово в шаблон
         let escapedRegExp = splittedTemplateRp
@@ -49,7 +81,7 @@ function fillTemplate(template, links) {
         newTemplate = newTemplate.replace(regExp, randomWord)
     }
 
-    return cleanSentence(newTemplate)
+    return newTemplate
 }
 
 /** ----------------------------------------------------------------------------
@@ -94,38 +126,39 @@ function getRandomTemplate(templates) {
     return newTemplate
 }
 
-/** Загрузка списков -----------------------------------------------------------
- * @arg    {string}    filename yaml-файл с описанием шаблонов для генерации
- * @return {object}
- *     @param {Map}    links Списки слов для шаблонов
- *     @param {object} templates Шаблоны
+/** Загрузка шаблоно -----------------------------------------------------------
+ * @arg    {string} filename YAML-файл с описанием шаблонов для генерации
+ * @return {object}          Шаблоны
  */
 
-function loadTemplates(filename) {
-    let links = new Map()
-    let templates
+function loadTemplates(templatesFile) {
+    let templatesFileContent = fs.readFileSync(templatesFile, 'utf8')
+    templates = yaml.safeLoad(templatesFileContent)
 
-    yaml.safeLoadAll(fs.readFileSync(filename, 'utf8'), obj => {
-        // Если это блок с манифестом,
-        // импортируем списки слов в звенья
-        let mainfest = 'манифест'
-        if(obj[mainfest] != null) {
-            for (let tpl in obj[mainfest]) {
-                // Подгрузка файла и разбиение на массив
-                let filename = path.resolve(__dirname, obj[mainfest][tpl])
-                let file = fs.readFileSync(filename, 'utf8')
-                let list = file.split(/\n|\r\n/).filter(Boolean)
+    return templates
+}
 
-                // Сохранение массива в звено
-                links.set(tpl, list)
-            }
-        } else {
-            // Получаем объект с шаблонами
-            templates = obj
-        }
-    })
+/** ----------------------------------------------------------------------------
+ * Загрузка списка слов для использования
+ * @param  {string} manifestFile Файл манифеста
+ * @return {Map}                 Списки слов
+ */
 
-    return { templates, links }
+function loadLinks(manifestFile) {
+    let links    = new Map()
+    let manifest = yaml.safeLoad(fs.readFileSync(manifestFile, 'utf8'))
+
+    for (let tpl in manifest) {
+        // Подгрузка файла и разбиение на массив
+        let filename = path.resolve(__dirname, manifest[tpl])
+        let file = fs.readFileSync(filename, 'utf8')
+        let list = file.split(/\n|\r\n/).filter(Boolean)
+
+        // Сохранение массива в звено
+        links.set(tpl, list)
+    }
+
+    return links
 }
 
 /** ----------------------------------------------------------------------------
@@ -150,9 +183,46 @@ function cleanSentence(string) {
         .replace(/\s\s+/g, ' ')
         // Удаляем двойные запятые
         .replace(/,,+/g, ',')
-        // Удаление стрелок
-        .replace(/\s+<-|->\s+/g, ' ')
 }
+
+/** ----------------------------------------------------------------------------
+ * Получени списка окончаний
+ * @param  {string} filename Название файла
+ * @return {object}          Объет со списком окончаний
+ */
+
+function getFlections(filename) {
+    return yaml.safeLoad(fs.readFileSync(filename, 'utf8'))
+}
+
+/** ----------------------------------------------------------------------------
+ * Изменение окончания
+ * @param  {string} stringToInflect Выходное слово
+ * @param  {string} gender          Род
+ * @param  {object} flections       Объект со списком окончаний
+ * @return {string}                 Изменённое слово
+ */
+
+function setInflect(stringToInflect, gender, flections) {
+    let newString = stringToInflect.trim()
+    gender = gender.replace(/[^А-я0-9]/g, '')
+
+    for (let item in flections) {
+        if (!flections.hasOwnProperty(item)) {
+            continue
+        }
+
+        let regExp = new RegExp(item)
+        if (regExp.test(newString)) {
+            newString = newString.replace(regExp, flections[item][gender])
+
+            break
+        }
+    }
+
+    return newString
+}
+
 
 /** ----------------------------------------------------------------------------
  * Получение числа вероятности из настроек
