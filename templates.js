@@ -1,12 +1,12 @@
 const prepLinks = require('./bin/prepareLinks')
 
 // Списки слов -----------------------------------------------------------------
-const ВВОД =       prepLinks('../links/ввод.yml')       // Вводные слова (фразы)
-const СУЩ =        prepLinks('../links/сущ.yml')        // Существительные
-const ГЛАГ =       prepLinks('../links/глаг.yml')       // Глаголы
-const ПРИЛ =       prepLinks('../links/прил.yml')       // Прилагательные
-const ДЕЕПРИЧ =    prepLinks('../links/дееприч.yml')    // Деепричастия
-const КРАТК_ПРИЛ = prepLinks('../links/кратк_прил.yml') // Краткие прилагательные
+const ВВОД =       prepLinks('./links/ввод.yml')       // Вводные слова (фразы)
+const СУЩ =        prepLinks('./links/сущ.yml')        // Существительные
+const ГЛАГ =       prepLinks('./links/глаг.yml')       // Глаголы
+const ПРИЛ =       prepLinks('./links/прил.yml')       // Прилагательные
+const ДЕЕПРИЧ =    prepLinks('./links/дееприч.yml')    // Деепричастия
+const КРАТК_ПРИЛ = prepLinks('./links/кратк_прил.yml') // Краткие прилагательные
 
 // Шаблоны предложений ---------------------------------------------------------
 module.exports = [

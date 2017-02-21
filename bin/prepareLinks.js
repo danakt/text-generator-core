@@ -3,7 +3,7 @@ const path = require('path')
 const yaml = require('js-yaml')
 
 module.exports = function(filename) {
-    let fileContent = fs.readFileSync(path.resolve(__dirname, filename))
+    let fileContent = fs.readFileSync(path.resolve('./', filename))
     let obj = yaml.safeLoad(fileContent)
 
     return function() {
