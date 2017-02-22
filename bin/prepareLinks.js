@@ -3,10 +3,19 @@ const path = require('path')
 const yaml = require('js-yaml')
 
 module.exports = function(filename) {
-    let fileContent = fs.readFileSync(path.resolve('./', filename))
-    let obj = yaml.safeLoad(fileContent)
+    let outputLinks = []
+
+    for (arg of arguments) {
+        let fileContent = fs.readFileSync(path.resolve('./', arg))
+        let obj = yaml.safeLoad(fileContent)
+
+        outputLinks = [
+            ...outputLinks,
+            ...obj
+        ]
+    }
 
     return function() {
-        return obj[obj.length * Math.random() | 0]
+        return outputLinks[outputLinks.length * Math.random() | 0]
     }
 }
