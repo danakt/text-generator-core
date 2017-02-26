@@ -3,7 +3,7 @@ const getTemplate  = require('./bin/getTemplate')
 const prepareLinks = require('./bin/prepareLinks')
 
 // Функция генерации текста ----------------------------------------------------
-module.exports = function(sentenceNum, { links, templates, flections }) {
+function getText(sentenceNum, { links, templates, flections }) {
     readyLinks = prepareLinks(links)
     let paragraph = ''
 
@@ -14,3 +14,10 @@ module.exports = function(sentenceNum, { links, templates, flections }) {
 
     return paragraph.trim()
 }
+
+// Экспорт ---------------------------------------------------------------------
+module.exports = Object.assign(getText, {
+    makeSentence,
+    getTemplate,
+    prepareLinks
+})
