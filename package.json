@@ -1,7 +1,7 @@
 {
-  "name": "text-generator",
+  "name": "text-generator-core",
   "version": "0.0.1",
-  "description": "",
+  "description": "Движок для генерации случайного текста по шаблонам.",
   "main": "index.js",
   "scripts": {
     "test": "mocha -c"
@@ -14,5 +14,26 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0"
-  }
+  },
+  "bin": {
+    "text-generator-core": "getTemplate.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danakt/text-generator-core.git"
+  },
+  "keywords": [
+    "text-generator",
+    "generator",
+    "text",
+    "русский язык",
+    "генератор текста"
+  ],
+  "bugs": {
+    "url": "https://github.com/danakt/text-generator-core/issues"
+  },
+  "homepage": "https://github.com/danakt/text-generator-core#readme"
 }
