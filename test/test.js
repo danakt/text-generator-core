@@ -1,7 +1,7 @@
 const fs        = require('fs')
 const expect    = require('chai').expect
 
-const getText   = require('../getText.js')
+const getText   = require('../getText')
 const { prepareLinks, getTemplate, makeSentence } = getText
 
 const templates = require('./templates')

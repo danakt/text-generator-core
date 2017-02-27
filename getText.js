@@ -1,4 +1,4 @@
-const makeSentence = require('./bin/makeSentence.js')
+const makeSentence = require('./bin/makeSentence')
 const getTemplate  = require('./bin/getTemplate')
 const prepareLinks = require('./bin/prepareLinks')
 
