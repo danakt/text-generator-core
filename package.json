@@ -1,8 +1,8 @@
 {
   "name": "text-generator-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Движок для генерации случайного текста по шаблонам",
-  "main": "bin/getTemplate.js",
+  "main": "getText.js",
   "scripts": {
     "test": "mocha -c"
   },
