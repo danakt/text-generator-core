@@ -1,5 +1,4 @@
-const fs   = require('fs')
-const yaml = require('js-yaml')
+const fs = require('fs')
 
 // Подготовка списков слов -----------------------------------------------------
 module.exports = function prepareLinks(list) {
@@ -14,29 +13,21 @@ module.exports = function prepareLinks(list) {
         // Подготавливаем список слов
         let listOfWords = []
 
-        // Если списков было несколько — объединяем их и
-        if (typeof list[item] !== 'string' && Array.isArray(list[item])) {
-            for (var i = 0; i < list[item].length; i++) {
+        // Если списков было несколько — объединяем их
+        if (Array.isArray(list[item])) {
+            for (let words of list[item]) {
                 listOfWords = [
                     ...listOfWords,
-                    ...yaml.safeLoad(list[item][i]).map(objectifier)
+                    ...words.map(objectifier)
                 ]
             }
-        } else
-        // Если список один — парсим их сразу
-        if (typeof list[item] === 'string') {
-            listOfWords = yaml.safeLoad(list[item]).map(objectifier)
         }
 
         // Сохраняем полученный список
-        if (links[item] != null) {
-            links[item] = [
-                ...links[item],
-                ...listOfWords,
-            ]
-        } else {
-            links[item] = listOfWords
-        }
+        links[item] = [
+            ...listOfWords,
+            ...(links[item] || [])
+        ]
     }
 
     return links
@@ -44,7 +35,11 @@ module.exports = function prepareLinks(list) {
 
 // Функция для превращение строкового пункта в объект --------------------------
 function objectifier(item) {
-    return typeof item === 'string'
-        ? { [item]: {} }
-        : item
+    if (typeof item === 'string') {
+        return { [item]: {} }
+    } else if (Array.isArray(item) && typeof item[0] === 'string') {
+        return { [item[0]]: item[1] || {} }
+    } else {
+        return item
+    }
 }
