@@ -8,9 +8,6 @@
   },
   "author": "Danakt Frost <mail@danakt.ru>",
   "license": "MIT",
-  "dependencies": {
-    "js-yaml": "^3.7.0"
-  },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0"
