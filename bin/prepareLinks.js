@@ -3,31 +3,32 @@ const fs = require('fs')
 // Подготовка списков слов -----------------------------------------------------
 module.exports = function prepareLinks(list) {
     // Обнуляем список
-    let links = {}
+    var links = {}
 
-    for (let item in list) {
+    for (var item in list) {
         if (!list.hasOwnProperty(item)) {
             continue
         }
 
         // Подготавливаем список слов
-        let listOfWords = []
+        var listOfWords = []
 
         // Если списков было несколько — объединяем их
         if (Array.isArray(list[item])) {
-            for (let words of list[item]) {
-                listOfWords = [
-                    ...listOfWords,
-                    ...words.map(objectifier)
-                ]
+            for (var words of list[item]) {
+                ;[].push.apply(
+                    listOfWords,
+                    words.map(objectifier)
+                )
             }
         }
 
         // Сохраняем полученный список
-        links[item] = [
-            ...listOfWords,
-            ...(links[item] || [])
-        ]
+        links[item] = [].slice.call(listOfWords)
+        ;[].push.apply(
+            links[item],
+            links[item] || []
+        )
     }
 
     return links
@@ -38,7 +39,9 @@ function objectifier(item) {
     if (typeof item === 'string') {
         return { [item]: {} }
     } else if (Array.isArray(item) && typeof item[0] === 'string') {
-        return { [item[0]]: item[1] || {} }
+        var retObj = {}
+        retObj[item[0]] = item[1] || {}
+        return retObj
     } else {
         return item
     }

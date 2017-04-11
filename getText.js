@@ -1,15 +1,15 @@
-const makeSentence = require('./bin/makeSentence')
-const getTemplate  = require('./bin/getTemplate')
-const prepareLinks = require('./bin/prepareLinks')
+var makeSentence = require('./bin/makeSentence')
+var getTemplate  = require('./bin/getTemplate')
+var prepareLinks = require('./bin/prepareLinks')
 
 // Функция генерации текста ----------------------------------------------------
-function getText(sentenceNum, { links, templates, flections }) {
-    readyLinks = prepareLinks(links)
-    let paragraph = ''
+function getText(sentenceNum, options) {
+    readyLinks = prepareLinks(options.links)
+    var paragraph = ''
 
-    for (let i = 0; i < Math.min(sentenceNum, 1e7); i++) {
-        let template = getTemplate(readyLinks, templates)
-        paragraph += makeSentence(template, flections) + ' '
+    for (var i = 0; i < Math.min(sentenceNum, 1e7); i++) {
+        var template = getTemplate(readyLinks, options.templates)
+        paragraph += makeSentence(template, options.flections) + ' '
     }
 
     return paragraph.trim()
@@ -17,7 +17,7 @@ function getText(sentenceNum, { links, templates, flections }) {
 
 // Экспорт ---------------------------------------------------------------------
 module.exports = Object.assign(getText, {
-    makeSentence,
-    getTemplate,
-    prepareLinks
+    makeSentence: makeSentence,
+    getTemplate:  getTemplate,
+    prepareLinks: prepareLinks
 })

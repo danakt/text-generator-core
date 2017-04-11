@@ -5,8 +5,8 @@ module.exports = function makeSentence(template, flections) {
 
 // Изменение формы слова -------------------------------------------------------
 function declination(obj, flections) {
-    for (let i = 0; i < obj.length; i++) {
-        let editItems = obj[i]['изменить']
+    for (var i = 0; i < obj.length; i++) {
+        var editItems = obj[i]['изменить']
         if (editItems != null && editItems.constructor === Set) {
             if (editItems.has('падеж')) {
                 // Изменение падежа
@@ -32,8 +32,8 @@ function setFlection(wordObject, target, flections) {
             continue
         }
 
-        let tg = wordObject[target]
-        let exp = new RegExp(item)
+        var tg = wordObject[target]
+        var exp = new RegExp(item)
 
         if(exp.test(wordObject['шаблон'])) {
             wordObject['шаблон'] = wordObject['шаблон']
@@ -48,10 +48,10 @@ function setFlection(wordObject, target, flections) {
 
 // Сборка предложения ----------------------------------------------------------
 function joinWords(template) {
-    let sentence = ''
+    var sentence = ''
 
-    for (let i = 0; i < template.length; i++) {
-        let item = template[i]['шаблон']
+    for (var i = 0; i < template.length; i++) {
+        var item = template[i]['шаблон']
 
         // Заглавная буква
         if (i === 0) {
