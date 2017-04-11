@@ -1,6 +1,6 @@
 {
   "name": "text-generator-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Движок для генерации случайного текста по шаблонам",
   "main": "getText.js",
   "scripts": {
