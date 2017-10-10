@@ -1,19 +1,20 @@
 /**
  * Добавляет словарь в список
- * @param {string}              name       Название нового словаря
- * @param {Dictionary|string[]} dictionary Словарь или массив со словами
- * @param {DictionariesStore}   store      Предыдущее хранилище
+ * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
+ * @param  {string}              name       Название нового словаря
+ * @param  {DictionariesStore}   store      Предыдущее хранилище
+ * @return {DictionariesStore}              Изменённое хранилище
  */
 export function addDictionary(
-    name:       string,
     dictionary: (DictionaryItem | string)[],
+    name:       string,
     store:      DictionariesStore,
 ): DictionariesStore {
-    const newDictionary: Dictionary = dictionary.map(item => {
-        return typeof item === 'string'
+    const newDictionary: Dictionary = dictionary.map(item =>
+        typeof item === 'string'
             ? [item, {}] as DictionaryItem
             : item
-    })
+    )
 
     // Создание нового состояния хранилища
     const newStore: DictionariesStore = {
@@ -39,6 +40,7 @@ export function getRandomItem(
         throw new Error('Отсуствует запрашиваемый словарь')
     }
 
+    // Получение рандомной ячейки из словаря
     const randomIndex: number = store[name].length * Math.random() | 0
     const randomItem: DictionaryItem = store[name][randomIndex]
 
