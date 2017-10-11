@@ -27,7 +27,7 @@ export function addDictionary(
 
 /**
  * Возвращает случайное слово из указанного словаря
- * @param  {string}            name Название словаря, из которого будет
+ * @param  {string}            name  Название словаря, из которого будет
  *   осуществляться поиск случайного слова
  * @param  {DictionariesStore} store Хранилище словарей
  * @return {DictionaryItem}
