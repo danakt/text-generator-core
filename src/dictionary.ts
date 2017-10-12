@@ -1,19 +1,13 @@
-/**
- * Пункт словаря
- */
-export type DictionaryItem = [string, { [prop: string]: any }]
-
-/**
- * Хранилище
- */
-export type Dictionary = DictionaryItem[]
-
-/**
- * Хранилище словарей
- */
+/** Хранилище словарей */
 export type DictionariesStore = {
     [name: string]: Dictionary
 }
+
+/** Словарь */
+export type Dictionary = DictionaryItem[]
+
+/** Пункт словаря */
+export type DictionaryItem = [string, { [prop: string]: any }]
 
 /**
  * Добавляет словарь в список
