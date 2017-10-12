@@ -1,4 +1,21 @@
 /**
+ * Пункт словаря
+ */
+export type DictionaryItem = [string, { [prop: string]: any }]
+
+/**
+ * Хранилище
+ */
+export type Dictionary = DictionaryItem[]
+
+/**
+ * Хранилище словарей
+ */
+export type DictionariesStore = {
+    [name: string]: Dictionary
+}
+
+/**
  * Добавляет словарь в список
  * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
  * @param  {string}              name       Название нового словаря
@@ -27,15 +44,11 @@ export function addDictionary(
 
 /**
  * Возвращает случайное слово из указанного словаря
- * @param  {string}            name  Название словаря, из которого будет
- *   осуществляться поиск случайного слова
+ * @param  {string}            name  Название словаря, из которого будет осуществляться поиск случайного слова
  * @param  {DictionariesStore} store Хранилище словарей
  * @return {DictionaryItem}
  */
-export function getRandomItem(
-    name:  string,
-    store: DictionariesStore,
-): DictionaryItem {
+export function getRandomItem(name: string, store: DictionariesStore): DictionaryItem {
     if (!store.hasOwnProperty(name)) {
         throw new Error('Отсуствует запрашиваемый словарь')
     }
