@@ -1,4 +1,3 @@
-import * as fs from 'fs'
 import { expect } from 'chai'
 import { addDictionary, getRandomItem } from '../src/dictionary'
 
