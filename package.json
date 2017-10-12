@@ -28,7 +28,9 @@
   "homepage": "https://github.com/danakt/text-generator-core#readme",
   "dependencies": {
     "@types/chai": "^4.0.4",
-    "immutable": "^3.8.2"
+    "@types/ramda": "^0.24.16",
+    "immutable": "^3.8.2",
+    "ramda": "^0.25.0"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.43",
