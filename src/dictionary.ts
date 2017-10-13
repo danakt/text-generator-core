@@ -1,4 +1,4 @@
-import { curry, compose, map, mapObjIndexed } from 'ramda'
+import { curry, compose, mapObjIndexed, values } from 'ramda'
 
 /** Хранилище словарей */
 export type DictionariesStore = {
@@ -47,12 +47,12 @@ export function createStore(mapOfDictionaries: {
     const addDictionaryCur = curry(addDictionary)
 
     // Подготовка массива функций для применения в композиции
-    const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name: string) => {
+    const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name) => {
         return addDictionaryCur(dictionary, name)
     }, mapOfDictionaries)
 
     // Создание хранилища
-    const store: DictionariesStore = compose.apply(null, adderForCompose)({})
+    const store: DictionariesStore = compose.apply(null, values(adderForCompose))({})
 
     return store
 }
