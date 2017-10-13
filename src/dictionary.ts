@@ -1,7 +1,7 @@
 import { curry, compose, mapObjIndexed, values } from 'ramda'
 
 /** Хранилище словарей */
-export type DictionariesStore = {
+export interface DictionariesStore {
     [name: string]: DictionaryItem[]
 }
 
