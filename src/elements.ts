@@ -38,7 +38,9 @@ export function createElement(type: 'sentence', props: null | {}, ...children: F
 export function createElement(type: 'fragment', props: null | {}, ...children: TemplateElement[]): FragmentElement
 export function createElement(type: 'template', props: null | {}, ...children: (string | Function)[]): TemplateElement
 export function createElement(type: TypeOfElement, props: null | {}, ...children: (string | Element | Function)[] ): Element {
-    const propsFallBack = props == null ? {} : props
+    const propsFallBack = props == null
+        ? {}
+        : props
 
     // Проврека иерархии типов
     // sentence —> fragment —> template
