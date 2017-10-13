@@ -5,17 +5,20 @@ export interface DictionariesStore {
     [name: string]: DictionaryItem[]
 }
 
-/** Пункт словаря */
+/**
+ * Пункт словаря
+ * @description В первой ячейке находится слово, во второй — его параметры
+ */
 export type DictionaryItem = [string, { [prop: string]: any }]
 
 /**
- * Добавляет словарь в список
+ * Добавляет словарь в хранилище
  * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
  * @param  {string}              name       Название нового словаря
  * @param  {DictionariesStore}   store      Предыдущее хранилище
  * @return {DictionariesStore}              Изменённое хранилище
  */
-export function addDictionary(
+function addDictionaryPlane(
     dictionary: (DictionaryItem | string)[],
     name:       string,
     store:      DictionariesStore,
@@ -36,6 +39,12 @@ export function addDictionary(
 }
 
 /**
+ * Каррированная функция добавления словаря в хранилище
+ * {@link addDictionaryPlane}
+ */
+export const addDictionary = curry(addDictionaryPlane)
+
+/**
  * Создаёт хранилище с указанными словарями
  * @param  {Object} mapOfDictionaries Объект со списком словарей для создания хранилища
  * @return {DictionariesStore}        Созданное хранилище
@@ -43,12 +52,9 @@ export function addDictionary(
 export function createStore(mapOfDictionaries: {
     [name: string]: (string | { [prop: string]: any })[]
 }): DictionariesStore {
-    // Каррированная функция добавления словаря
-    const addDictionaryCur = curry(addDictionary)
-
     // Подготовка массива функций для применения в композиции
     const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name) => {
-        return addDictionaryCur(dictionary, name)
+        return addDictionary(dictionary, name)
     }, mapOfDictionaries)
 
     // Создание хранилища
@@ -60,10 +66,10 @@ export function createStore(mapOfDictionaries: {
 /**
  * Возвращает случайное слово из указанного словаря
  * @param  {string}            name  Название словаря, из которого будет осуществляться поиск случайного слова
- * @param  {DictionariesStore} store Хранилище словарей
+ * @param  {DictionariesStore} store Хранилище, содержащее словарь
  * @return {DictionaryItem}
  */
-export function getRandomItem(name: string, store: DictionariesStore): DictionaryItem {
+function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryItem {
     if (!store.hasOwnProperty(name)) {
         throw new Error('Отсуствует запрашиваемый словарь')
     }
@@ -74,3 +80,9 @@ export function getRandomItem(name: string, store: DictionariesStore): Dictionar
 
     return randomItem
 }
+
+/**
+ * Каррированная функция для получения случайного пункта из указанного словаря
+ * {@link getRandomItemPlane}
+ */
+export const getRandomItem = curry(getRandomItemPlane)
