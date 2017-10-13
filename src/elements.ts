@@ -1,3 +1,8 @@
+/**
+ * Создание элементов
+ * @description Функционал реализован для JSX-шаблонизатора. Элементы могут быть только трёх типов: «sentence»,
+ * «fragment» и «template». Элементы должны следовать иерархии: sentence —> fragment —> template
+ */
 import { DictionaryItem } from './dictionary'
 
 /** Типы элементов export */
@@ -42,8 +47,6 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: (str
         ? {}
         : props
 
-    // Проврека иерархии типов
-    // sentence —> fragment —> template
     switch (type) {
         case 'sentence': {
             return createSentenceElement(propsFallBack, ...children as FragmentElement[])
