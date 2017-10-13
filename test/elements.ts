@@ -27,11 +27,15 @@ describe('Создание элемента шаблона', () => {
                         {
                             type: 'template',
                             props: {},
-                            children: 'Lorem ipsum'
+                            children: [
+                                'Lorem ipsum'
+                            ]
                         }, {
                             type: 'template',
                             props: {},
-                            children: 'Dolor sit amet'
+                            children: [
+                                'Dolor sit amet'
+                            ]
                         }
                     ]
                 }
