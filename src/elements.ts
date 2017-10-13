@@ -34,10 +34,10 @@ export interface TemplateElement extends Element {
  * @param {Object}           props      Параметры элемента
  * @param {...object|string} children   Дочерние элементы
  */
-export function createElement(type: 'sentence', props: null | {}, ...children: FragmentElement[]): SentenceElement
-export function createElement(type: 'fragment', props: null | {}, ...children: TemplateElement[]): FragmentElement
-export function createElement(type: 'template', props: null | {}, ...children: (string | Function)[]): TemplateElement
-export function createElement(type: TypeOfElement, props: null | {}, ...children: (string | Element | Function)[] ): Element {
+export function createElement(type: 'sentence', props?: {}, ...children: FragmentElement[]): SentenceElement
+export function createElement(type: 'fragment', props?: {}, ...children: TemplateElement[]): FragmentElement
+export function createElement(type: 'template', props?: {}, ...children: (string | Function)[]): TemplateElement
+export function createElement(type: TypeOfElement, props?: {}, ...children: (string | Element | Function)[] ): Element {
     const propsFallBack = props == null
         ? {}
         : props
