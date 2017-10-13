@@ -47,12 +47,9 @@ export function createStore(mapOfDictionaries: {
     const addDictionaryCur = curry(addDictionary)
 
     // Подготовка массива функций для применения в композиции
-    const adderForCompose = mapObjIndexed(
-        (dictionary: (DictionaryItem | string)[], name: string) => {
-            return addDictionaryCur(dictionary, name)
-        },
-        mapOfDictionaries
-    )
+    const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name: string) => {
+        return addDictionaryCur(dictionary, name)
+    }, mapOfDictionaries)
 
     // Создание хранилища
     const store: DictionariesStore = compose.apply(null, adderForCompose)({})
