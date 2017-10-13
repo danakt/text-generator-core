@@ -1,10 +1,9 @@
+import { curry, compose, map, mapObjIndexed } from 'ramda'
+
 /** Хранилище словарей */
 export type DictionariesStore = {
-    [name: string]: Dictionary
+    [name: string]: DictionaryItem[]
 }
-
-/** Словарь */
-export type Dictionary = DictionaryItem[]
 
 /** Пункт словаря */
 export type DictionaryItem = [string, { [prop: string]: any }]
@@ -21,7 +20,7 @@ export function addDictionary(
     name:       string,
     store:      DictionariesStore,
 ): DictionariesStore {
-    const newDictionary: Dictionary = dictionary.map(item =>
+    const newDictionary: DictionaryItem[] = dictionary.map(item =>
         typeof item === 'string'
             ? [item, {}] as DictionaryItem
             : item
@@ -34,6 +33,31 @@ export function addDictionary(
     }
 
     return newStore
+}
+
+/**
+ * Создаёт хранилище с указанными словарями
+ * @param  {Object} mapOfDictionaries Объект со списком словарей для создания хранилища
+ * @return {DictionariesStore}        Созданное хранилище
+ */
+export function createStore(mapOfDictionaries: {
+    [name: string]: (string | { [prop: string]: any })[]
+}): DictionariesStore {
+    // Каррированная функция добавления словаря
+    const addDictionaryCur = curry(addDictionary)
+
+    // Подготовка массива функций для применения в композиции
+    const adderForCompose = mapObjIndexed(
+        (dictionary: (DictionaryItem | string)[], name: string) => {
+            return addDictionaryCur(dictionary, name)
+        },
+        mapOfDictionaries
+    )
+
+    // Создание хранилища
+    const store: DictionariesStore = compose.apply(null, adderForCompose)({})
+
+    return store
 }
 
 /**
