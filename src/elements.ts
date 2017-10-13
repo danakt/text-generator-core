@@ -1,38 +1,31 @@
+import { DictionaryItem } from './dictionary'
+
 /** Типы элементов export */
 type ElemenType = 'sentence' | 'fragment' | 'template'
 
-/**
- * Интерфейс элемента шаблона
- * @interface
- */
+/** Элемента шаблона */
 export interface Element {
     type:       ElemenType
     props:      { [prop: string]: any }
-    children:   string | Element[]
+    children:   (string | Element | DictionaryItem)[]
 }
 
-/**
- * Элемент предложения
- */
+/** Элемент предложения */
 export interface SentenceElement extends Element {
     type:       'sentence'
     children:   FragmentElement[]
 }
 
-/**
- * Элемент фрагмента
- */
+/** Элемент фрагмента */
 export interface FragmentElement extends Element {
     type:       'fragment'
     children:   TemplateElement[]
 }
 
-/**
- * Элемент шаблона
- */
+/** Элемент шаблона */
 export interface TemplateElement extends Element {
     type:       'template'
-    children:   string
+    children:   (string | DictionaryItem)[]
 }
 
 /**
@@ -43,8 +36,8 @@ export interface TemplateElement extends Element {
  */
 export function createElement(type: 'sentence', props: null | {}, ...children: FragmentElement[]): SentenceElement
 export function createElement(type: 'fragment', props: null | {}, ...children: TemplateElement[]): FragmentElement
-export function createElement(type: 'template', props: null | {}, children: string): TemplateElement
-export function createElement(type: ElemenType, props: null | {}, ...children: (string | Element)[] ): Element {
+export function createElement(type: 'template', props: null | {}, ...children: (string | DictionaryItem)[]): TemplateElement
+export function createElement(type: ElemenType, props: null | {}, ...children: (string | Element | DictionaryItem)[] ): Element {
     const propsFallBack = props == null ? {} : props
 
     // Проврека иерархии типов
@@ -79,14 +72,19 @@ export function createElement(type: ElemenType, props: null | {}, ...children: (
         }
 
         case 'template': {
-            if (typeof children[0] !== 'string') {
-                throw new Error('Элемент «template» может иметь только строки в качестве дочерних элементов')
-            }
+            children.forEach((child: Element) => {
+                if (typeof child !== 'string' && typeof child !== 'function') {
+                    throw new Error(
+                        'Элемент «template» может иметь в качестве дочерних элементов только строки или функции, ' +
+                        'возвращаемые элементы словаря.'
+                    )
+                }
+            })
 
             return {
                 type,
                 props: propsFallBack,
-                children: children[0] as string,
+                children
             }
         }
 
