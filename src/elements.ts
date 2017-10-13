@@ -1,11 +1,11 @@
 import { DictionaryItem } from './dictionary'
 
 /** Типы элементов export */
-type ElemenType = 'sentence' | 'fragment' | 'template'
+type TypeOfElement = 'sentence' | 'fragment' | 'template'
 
 /** Элемента шаблона */
 export interface Element {
-    type:       ElemenType
+    type:       TypeOfElement
     props:      { [prop: string]: any }
     children:   (string | Element | Function)[]
 }
@@ -37,7 +37,7 @@ export interface TemplateElement extends Element {
 export function createElement(type: 'sentence', props: null | {}, ...children: FragmentElement[]): SentenceElement
 export function createElement(type: 'fragment', props: null | {}, ...children: TemplateElement[]): FragmentElement
 export function createElement(type: 'template', props: null | {}, ...children: (string | Function)[]): TemplateElement
-export function createElement(type: ElemenType, props: null | {}, ...children: (string | Element | Function)[] ): Element {
+export function createElement(type: TypeOfElement, props: null | {}, ...children: (string | Element | Function)[] ): Element {
     const propsFallBack = props == null ? {} : props
 
     // Проврека иерархии типов
