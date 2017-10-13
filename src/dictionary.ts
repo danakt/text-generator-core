@@ -9,7 +9,10 @@ export interface DictionariesStore {
  * Пункт словаря
  * @description В первой ячейке находится слово, во второй — его параметры
  */
-export type DictionaryItem = [string, { [prop: string]: any }]
+export type DictionaryItem = [
+    string,
+    { [prop: string]: any }
+]
 
 /**
  * Добавляет словарь в хранилище
