@@ -2,7 +2,7 @@ import { curry, compose, mapObjIndexed, values } from 'ramda'
 
 /** Хранилище словарей */
 export interface DictionariesStore {
-    [name: string]: DictionaryItem[]
+  [name: string]: DictionaryItem[]
 }
 
 /**
@@ -10,8 +10,8 @@ export interface DictionariesStore {
  * @description В первой ячейке находится слово, во второй — его параметры
  */
 export type DictionaryItem = [
-    string,
-    { [prop: string]: any }
+  string,
+  { [prop: string]: any }
 ]
 
 /**
@@ -22,23 +22,23 @@ export type DictionaryItem = [
  * @return {DictionariesStore}              Изменённое хранилище
  */
 function addDictionaryPlane(
-    dictionary: (DictionaryItem | string)[],
-    name:       string,
-    store:      DictionariesStore,
+  dictionary: (DictionaryItem | string)[],
+  name:       string,
+  store:      DictionariesStore,
 ): DictionariesStore {
-    const newDictionary: DictionaryItem[] = dictionary.map(item =>
-        typeof item === 'string'
-            ? [item, {}] as DictionaryItem
-            : item
-    )
+  const newDictionary: DictionaryItem[] = dictionary.map(item =>
+    typeof item === 'string'
+      ? [item, {}] as DictionaryItem
+      : item
+  )
 
-    // Создание нового состояния хранилища
-    const newStore: DictionariesStore = {
-        ...store,
-        [name]: newDictionary,
-    }
+  // Создание нового состояния хранилища
+  const newStore: DictionariesStore = {
+    ...store,
+    [name]: newDictionary,
+  }
 
-    return newStore
+  return newStore
 }
 
 /**
@@ -53,17 +53,17 @@ export const addDictionary = curry(addDictionaryPlane)
  * @return {DictionariesStore}        Созданное хранилище
  */
 export function createStore(mapOfDictionaries: {
-    [name: string]: (string | { [prop: string]: any })[]
+  [name: string]: (string | { [prop: string]: any })[]
 }): DictionariesStore {
-    // Подготовка массива функций для применения в композиции
-    const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name) => {
-        return addDictionary(dictionary, name)
-    }, mapOfDictionaries)
+  // Подготовка массива функций для применения в композиции
+  const adderForCompose = mapObjIndexed((dictionary: (DictionaryItem | string)[], name) => {
+    return addDictionary(dictionary, name)
+  }, mapOfDictionaries)
 
-    // Создание хранилища
-    const store: DictionariesStore = compose.apply(null, values(adderForCompose))({})
+  // Создание хранилища
+  const store: DictionariesStore = compose.apply(null, values(adderForCompose))({})
 
-    return store
+  return store
 }
 
 /**
@@ -73,15 +73,15 @@ export function createStore(mapOfDictionaries: {
  * @return {DictionaryItem}
  */
 function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryItem {
-    if (!store.hasOwnProperty(name)) {
-        throw new Error('Отсуствует запрашиваемый словарь')
-    }
+  if (!store.hasOwnProperty(name)) {
+    throw new Error('Отсуствует запрашиваемый словарь')
+  }
 
-    // Получение рандомной ячейки из словаря
-    const randomIndex: number = store[name].length * Math.random() | 0
-    const randomItem: DictionaryItem = store[name][randomIndex]
+  // Получение рандомной ячейки из словаря
+  const randomIndex: number = store[name].length * Math.random() | 0
+  const randomItem: DictionaryItem = store[name][randomIndex]
 
-    return randomItem
+  return randomItem
 }
 
 /**
