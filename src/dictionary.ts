@@ -15,6 +15,13 @@ export type DictionaryItem = [
 ]
 
 /**
+ * Функция, полученная в результате вызова каррированного getRandomItem с
+ * указанием библиотеки
+ */
+export type RandomItemGetter = (store: DictionariesStore) => DictionaryItem
+
+
+/**
  * Добавляет словарь в хранилище
  * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
  * @param  {string}              name       Название нового словаря
@@ -68,7 +75,7 @@ export function createStore(mapOfDictionaries: {
 
 /**
  * Возвращает случайное слово из указанного словаря
- * @param  {string}            name  Название словаря, из которого будет осуществляться поиск случайного слова
+ * @param  {string}            name  Название словаря, в котором будет осуществляться поиск случайного слова
  * @param  {DictionariesStore} store Хранилище, содержащее словарь
  * @return {DictionaryItem}
  */
@@ -87,5 +94,7 @@ function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryI
 /**
  * Каррированная функция для получения случайного пункта из указанного словаря
  * {@link getRandomItemPlane}
+ * @param  {string} dictionaryName Название словаря, в котором будет осуществляться поиск случайного слова
+ * @return {ItemGetter} Функция,созданная в результате карринга. Возвращает слово из указанной библиотеки словарей
  */
-export const getRandomItem = curry(getRandomItemPlane)
+export const getRandomItem: (dictionaryName: string) => RandomItemGetter = curry(getRandomItemPlane)
