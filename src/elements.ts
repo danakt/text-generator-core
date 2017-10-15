@@ -3,7 +3,7 @@
  * @description Функционал реализован для JSX-шаблонизатора. Элементы могут быть только трёх типов: «sentence»,
  * «fragment» и «template». Элементы должны следовать иерархии: sentence —> fragment —> template
  */
-import { DictionaryItem } from './dictionary'
+import { DictionaryItem, RandomItemGetter } from './dictionary'
 
 /** Типы элементов export */
 type TypeOfElement = 'sentence' | 'fragment' | 'template'
@@ -25,12 +25,13 @@ export interface SentenceElement extends Element {
 export interface FragmentElement extends Element {
   type:     'fragment'
   children: TemplateElement[]
+  result?:  string
 }
 
 /** Элемент шаблона */
 export interface TemplateElement extends Element {
   type:     'template'
-  children: (string | Function)[]
+  children: (string | RandomItemGetter)[]
 }
 
 /**
@@ -41,8 +42,12 @@ export interface TemplateElement extends Element {
  */
 export function createElement(type: 'sentence', props?: {}, ...children: FragmentElement[]): SentenceElement
 export function createElement(type: 'fragment', props?: {}, ...children: TemplateElement[]): FragmentElement
-export function createElement(type: 'template', props?: {}, ...children: (string | Function)[]): TemplateElement
-export function createElement(type: TypeOfElement, props?: {}, ...children: (string | Element | Function)[] ): Element {
+export function createElement(type: 'template', props?: {}, ...children: (string | RandomItemGetter)[]): TemplateElement
+export function createElement(
+  type: TypeOfElement,
+  props?: {},
+  ...children: (string | Element | RandomItemGetter)[],
+): Element {
   const propsFallBack = props == null
     ? {}
     : props
@@ -57,7 +62,7 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: (str
     }
 
     case 'template': {
-      return createTemplateElement(propsFallBack, ...children as (string | Function)[])
+      return createTemplateElement(propsFallBack, ...children as (string | RandomItemGetter)[])
     }
 
     default: {
@@ -112,7 +117,7 @@ export function createFragmentElement(props: object, ...children: TemplateElemen
  * @param  {...(string|Function)} children  Дочерние элементы
  * @return {TemplateElement}
  */
-export function createTemplateElement(props: object, ...children: (string | Function)[]): TemplateElement {
+export function createTemplateElement(props: object, ...children: (string | RandomItemGetter)[]): TemplateElement {
   children.forEach((child: string | Function) => {
     if (typeof child !== 'string' && typeof child !== 'function') {
       throw new Error(
