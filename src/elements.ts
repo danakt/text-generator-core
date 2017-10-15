@@ -25,7 +25,7 @@ export interface SentenceElement extends Element {
 export interface FragmentElement extends Element {
   type:     'fragment'
   children: TemplateElement[]
-  result?:  string
+  result?:  (string | DictionaryItem)[]
 }
 
 /** Элемент шаблона */
