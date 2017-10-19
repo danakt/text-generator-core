@@ -28,7 +28,6 @@
   },
   "homepage": "https://github.com/danakt/text-generator-core#readme",
   "dependencies": {
-    "immutable": "^3.8.2",
     "ramda": "^0.25.0"
   },
   "devDependencies": {
