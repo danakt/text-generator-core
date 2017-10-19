@@ -21,6 +21,8 @@ export function generateSentence(sentence: SentenceElement, transform: Transform
     curry(transformFragments)(transform),
     // Превращение результатов фрагментов в строковое предложение
     stringifySentence,
+    // Форматирование строкового предложения
+    formatSentence,
   )
 
   const sentencePrepared: string = prepareSentence(sentence)
@@ -139,8 +141,16 @@ function stringifySentence(sentence: SentenceElement): string {
   // Получение строкового представления результатов фрагментов
   const stringifiedResults: string = foldFragments(sentence.children)
 
-  // Форматирование предложения
-  const formatSentence: (sentence: string) => string = pipe(
+  return stringifiedResults
+}
+
+/**
+ * Форматирует предложение
+ * @param  {string} sentence Строковое предложение
+ * @return {string}
+ */
+function formatSentence(sentence: string): string {
+  return pipe(
     // Удаление повторяющихся запятых и пробелов вокруг запятых
     replace(/\s+,\s*|\s*,\s*,\s*/g, ', '),
     // Пробелы вокруг прочих знаков припинания
@@ -155,11 +165,4 @@ function stringifySentence(sentence: SentenceElement): string {
     // Капиталайз
     (str: string) => str[0].toUpperCase() + str.substr(1),
   )
-
-  // Добавление знака препинания, указанног ов параметре «stop»
-  const formattedSentence: string = (
-    formatSentence(stringifiedResults)
-  )
-
-  return formattedSentence
 }
