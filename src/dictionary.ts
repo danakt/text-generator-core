@@ -20,7 +20,6 @@ export type DictionaryItem = [
  */
 export type RandomItemGetter = (store: DictionariesStore) => DictionaryItem
 
-
 /**
  * Добавляет словарь в хранилище
  * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
@@ -97,4 +96,4 @@ function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryI
  * @param  {string} dictionaryName Название словаря, в котором будет осуществляться поиск случайного слова
  * @return {ItemGetter} Функция,созданная в результате карринга. Возвращает слово из указанной библиотеки словарей
  */
-export const getRandomItem: (dictionaryName: string) => RandomItemGetter = curry(getRandomItemPlane)
+export const getRandomItem = curry(getRandomItemPlane)

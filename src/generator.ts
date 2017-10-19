@@ -90,7 +90,10 @@ function makeResultsForFragments(store: DictionariesStore, sentence: SentenceEle
 
     const template: TemplateElement = fragment.children[0]
 
-    const createMapperTemplateCildren = (store: DictionariesStore, templateChildren: string | RandomItemGetter) => {
+    const createMapperTemplateCildren = (
+      store: DictionariesStore,
+      templateChildren: string | RandomItemGetter | DictionaryItem,
+    ) => {
       if (typeof templateChildren === 'function') {
         return templateChildren(store)
       }

@@ -12,7 +12,7 @@ type TypeOfElement = 'sentence' | 'fragment' | 'template'
 export interface Element {
   type:     TypeOfElement
   props:    { [prop: string]: any }
-  children: (string | Element | Function)[]
+  children: (string | Element | Function | DictionaryItem)[]
 }
 
 /** Элемент предложения */
@@ -31,7 +31,7 @@ export interface FragmentElement extends Element {
 /** Элемент шаблона */
 export interface TemplateElement extends Element {
   type:     'template'
-  children: (string | RandomItemGetter)[]
+  children: (string | RandomItemGetter | DictionaryItem)[]
 }
 
 /**
@@ -124,11 +124,11 @@ export function createFragmentElement(props: object, ...children: TemplateElemen
  * @return {TemplateElement}
  */
 export function createTemplateElement(props: object, ...children: (string | RandomItemGetter)[]): TemplateElement {
-  children.forEach((child: string | Function) => {
-    if (typeof child !== 'string' && typeof child !== 'function') {
+  children.forEach((child: string | Function | DictionaryItem) => {
+    if (typeof child !== 'string' && typeof child !== 'function' && !Array.isArray(child)) {
       throw new Error(
-        'Элемент «template» может иметь в качестве дочерних элементов только строки или функции, ' +
-        'возвращаемые элементы словаря.'
+        'Элемент «template» может иметь в качестве дочерних элементов только строки, ' +
+        'элементы словаря или функции, возвращаемые элементы словаря.'
       )
     }
   })
