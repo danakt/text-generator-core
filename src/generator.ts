@@ -1,4 +1,4 @@
-import { pathEq, pipe, curry, findLastIndex, insert, remove, reduce, replace, trim } from 'ramda'
+import { pathEq, pipe, curry, findLastIndex, insert, remove, reduce, replace, trim, update } from 'ramda'
 import { DictionariesStore, RandomItemGetter, DictionaryItem } from './dictionary'
 import { SentenceElement, FragmentElement, SentenceChild } from './elements'
 
@@ -87,17 +87,9 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
       itemTargetTransform,
     )
 
-    // Функция для замены дочернего элемента на новый
-    const replaceChildren = (replacer: DictionaryItem, index: number, childrenArray: (string | DictionaryItem)[]) => {
-      return pipe(
-        remove(index, 1),
-        insert(index, replacer),
-      )(childrenArray)
-    }
-
     return {
       ...fragment,
-      children: replaceChildren(itemTransformed, itemTargetTransformIndex, fragment.children)
+      children: update(itemTargetTransformIndex, itemTransformed, fragment.children)
     }
   }
 
