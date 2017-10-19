@@ -18,14 +18,13 @@ export interface Element {
 /** Элемент предложения */
 export interface SentenceElement extends Element {
   type:     'sentence'
-  children: FragmentElement[]
+  children: (FragmentElement | string)[]
 }
 
 /** Элемент фрагмента */
 export interface FragmentElement extends Element {
   type:     'fragment'
   children: TemplateElement[]
-  result?:  (string | DictionaryItem)[]
 }
 
 /** Элемент шаблона */
@@ -79,11 +78,11 @@ export function createElement(
  */
 export function createSentenceElement(props: object, ...children: FragmentElement[]): SentenceElement {
   const filteredChildren: FragmentElement[] = children.filter((child: Element) => {
-    if (typeof child !== 'object') {
+    if (typeof child !== 'object' && typeof child !== 'string') {
       return false
     }
 
-    if (child.type !== 'fragment') {
+    if (typeof child === 'object' && child.type !== 'fragment') {
       throw new Error('Элемент «sentence» может иметь только дочерние элементы с типом «fragment»')
     }
 
