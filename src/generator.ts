@@ -22,8 +22,6 @@ export function generateSentence(
 ): string {
   // Создание композиции для подготовки предложения
   const prepareSentence: (s: SentenceElement) => SentenceElement = pipe(
-    // Отсеивает фрагменты с «chnace»
-    filterFragments,
     // Выбор одного шаблона во фрагментах
     filterTempaltesInFragments,
     // Получение случайных пунктов из библиотеки, сохранение результатов в фрагменты
@@ -37,35 +35,6 @@ export function generateSentence(
   const striginfiedSentence: string = stringifySentence(sentencePrepared)
 
   return striginfiedSentence
-}
-
-/**
- * Отсеивает вариации во фрагментах в зависимости от параметра «chance»
- * @description У фрагментов может быть установлен параметр «chance», который
- *   устанавливает шант появления данного фрагмента в предложении.
- *   Функция случайным образом отсеивает такие фрагменты.
- * @param {SentenceElement} sentence Элемент предложения
- * @param {SentenceElement}
- */
-function filterFragments(sentence: SentenceElement): SentenceElement {
-  const preparedFragments: FragmentElement[] = sentence.children.filter((fragment: FragmentElement) => {
-      const chance: void | number = fragment.props.chance
-
-      if (typeof chance !== 'number') {
-        return true
-      }
-
-      if (chance <= Math.random()) {
-        return false
-      }
-
-      return true
-    })
-
-  return {
-    ...sentence,
-    children: preparedFragments
-  }
 }
 
 /**
