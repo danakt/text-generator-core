@@ -41,8 +41,9 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
       return fragment
     }
 
-    // Если у фрагмента нет параметра «for», ничего не делаем
-    if (typeof fragment.props.for !== 'string') {
+    // Если у фрагмента нет параметра «for», или если у фрагмента нет дочерних элементов,
+    // ничего не делаем
+    if (typeof fragment.props.for !== 'string' || fragment.children == null) {
       return fragment
     }
 
@@ -51,11 +52,7 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
     const roleModelFragment: undefined | FragmentElement = preparedFragments.find(isPathEuqal)
 
     // Если не был найден фрагмент с таким id, ничего не делаем
-    if (roleModelFragment == null) {
-      return fragment
-    }
-
-    if (fragment.children == null || roleModelFragment.children == null) {
+    if (roleModelFragment == null || roleModelFragment.children == null) {
       return fragment
     }
 
@@ -88,12 +85,17 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
       itemTargetTransform,
     )
 
+    // Функция для замены дочернего элемента на новый
+    const replaceChildren = (replacer: DictionaryItem, index: number, childrenArray: (string | DictionaryItem)[]) => {
+      return pipe(
+        remove(index, 1),
+        insert(index, replacer),
+      )(childrenArray)
+    }
+
     return {
       ...fragment,
-      children: pipe(
-        remove(itemTargetTransformIndex, 1),
-        insert(itemTargetTransformIndex, itemTransformed),
-      )(fragment.children)
+      children: replaceChildren(itemTransformed, itemTargetTransformIndex, fragment.children)
     }
   }
 
