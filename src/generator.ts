@@ -25,8 +25,8 @@ export function generateSentence(sentence: SentenceElement, transform: Transform
     formatSentence,
   )
 
+  // Подготовка предложения
   const sentencePrepared: string = prepareSentence(sentence)
-
   return sentencePrepared
 }
 
@@ -50,8 +50,8 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
     }
 
     // Поиск элемента с id
-    const isPathEuqal = pathEq(['props', 'id'], fragment.props.for)
-    const roleModelFragment: undefined | FragmentElement = preparedFragments.find(isPathEuqal)
+    const checkPathEuqal = pathEq(['props', 'id'], fragment.props.for)
+    const roleModelFragment: undefined | FragmentElement = preparedFragments.find(checkPathEuqal)
 
     // Если не был найден фрагмент с таким id, ничего не делаем
     if (roleModelFragment == null || roleModelFragment.children == null) {
@@ -144,12 +144,9 @@ function stringifySentence(sentence: SentenceElement): string {
 function formatSentence(sentence: string): string {
   return pipe(
     // Удаление повторяющихся запятых и пробелов вокруг запятых
-    replace(/\s+,\s*|\s*,\s*,\s*/g, ', '),
+    replace(/\s+,\s*|\s*,+\s*,+\s*/g, ', '),
     // Пробелы вокруг прочих знаков припинания
     replace(/\s+([,.!?])\s*/g, '$1 '),
-    // Удаление повторяющихся знаков припинания
-    // TODO: Обдумать правильность данного форматирования
-    replace(/(([,.!?])\s*){2,}/g, '$1'),
     // Удаление множественныз пробелов
     replace(/\s\s+/g, ' '),
     // Удаление пробелов в начале и конце
