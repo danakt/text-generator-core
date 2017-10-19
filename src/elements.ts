@@ -78,16 +78,22 @@ export function createElement(
  * @return {SentenceElement}
  */
 export function createSentenceElement(props: object, ...children: FragmentElement[]): SentenceElement {
-  children.forEach((child: Element) => {
+  const filteredChildren: FragmentElement[] = children.filter((child: Element) => {
+    if (typeof child !== 'object') {
+      return false
+    }
+
     if (child.type !== 'fragment') {
       throw new Error('Элемент «sentence» может иметь только дочерние элементы с типом «fragment»')
     }
+
+    return true
   })
 
   return {
     type: 'sentence',
     props,
-    children,
+    children: filteredChildren,
   }
 }
 

@@ -4,7 +4,8 @@
   "description": "Движок для генерации случайного текста по шаблонам",
   "main": "getText.js",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c"
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c",
+    "test:watch": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c --watch"
   },
   "author": "Danakt Frost <mail@danakt.ru>",
   "license": "MIT",
