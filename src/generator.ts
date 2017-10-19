@@ -119,15 +119,14 @@ function stringifySentence(sentence: SentenceElement): string {
     }
 
     // Свёртка результатов фрагментов
-    const foldResults = reduce((out: string, item: string | DictionaryItem) => {
-      if (typeof item === 'string') {
-        return out + ' ' + item
-      }
+    const foldedChildren: string = reduce((out: string, item: string | DictionaryItem) => {
+      return typeof item === 'string'
+        ? out + ' ' + item
+        : out + ' ' + item[0]
+    }, '', fragmentChildren)
 
-      return out + ' ' + item[0]
-    }, '')
 
-    return out + foldResults(fragmentChildren)
+    return out + foldedChildren
   }, '')
 
   // Получение строкового представления результатов фрагментов
