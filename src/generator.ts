@@ -21,49 +21,18 @@ export function generateSentence(
   transform:  TransformFunction
 ): string {
   // Создание композиции для подготовки предложения
-  const prepareSentence: (s: SentenceElement) => SentenceElement = pipe(
-    // Выбор одного шаблона во фрагментах
-    filterTempaltesInFragments,
+  const prepareSentence: (sentence: SentenceElement) => string = pipe(
     // Получение случайных пунктов из библиотеки, сохранение результатов в фрагменты
     curry(makeResultsForFragments)(store),
     // Трансформация фрагментов с параметром «for»
     curry(transformFragments)(transform),
+    // Превращение результатов фрагментов в строковое предложение
+    stringifySentence,
   )
 
-  // Подготовка предложения
-  const sentencePrepared: SentenceElement = prepareSentence(sentence)
-  const striginfiedSentence: string = stringifySentence(sentencePrepared)
+  const sentencePrepared: string = prepareSentence(sentence)
 
-  return striginfiedSentence
-}
-
-/**
- * Оставляет один шаблон во фрагменте случайным образом
- * @description В каждом фрагменте может находиться несколько шаблонов. Функция
- *   оставляет один шаблон из списка случайным образом.
- * @param {SentenceElement} sentence Элемент предложения
- * @param {SentenceElement}
- */
-function filterTempaltesInFragments(sentence: SentenceElement) {
-  const preparedFragments: FragmentElement[] = sentence.children.map((fragment: FragmentElement) => {
-    if (fragment.children.length === 0) {
-      return fragment
-    }
-
-    // Выбирается случайный шаблон из списка дочерних элементов фрагмента
-    const randomIndex: number = fragment.children.length * Math.random() | 0
-    const randomChild: TemplateElement = fragment.children[randomIndex]
-
-    return {
-      ...fragment,
-      children: [randomChild]
-    }
-  })
-
-  return {
-    ...sentence,
-    children: preparedFragments
-  }
+  return sentencePrepared
 }
 
 /**
