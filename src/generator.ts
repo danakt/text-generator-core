@@ -1,6 +1,6 @@
 import { pathEq, pipe, curry, findLastIndex, insert, remove, reduce, replace, trim } from 'ramda'
 import { DictionariesStore, RandomItemGetter, DictionaryItem } from './dictionary'
-import { SentenceElement, FragmentElement, TemplateElement } from './elements'
+import { SentenceElement, FragmentElement, SentenceChild } from './elements'
 
 /**
  * Тип функции-транформатора
@@ -10,20 +10,13 @@ export type TransformFunction = (roleModel: DictionaryItem, target: DictionaryIt
 /**
  * Генерация предложения по шаблону и словарю
  * @param  {SentenceElement}   sentence  Элемент предложени, содержащий в себе шаблон
- * @param  {DictionariesStore} store     Хранилище словарей
  * @param  {TransformFunction} transform Функция трансформации элементов, например для
  *  изменения склонения или рода
  * @return {string}
  */
-export function generateSentence(
-  sentence:   SentenceElement,
-  store:      DictionariesStore,
-  transform:  TransformFunction
-): string {
+export function generateSentence(sentence: SentenceElement, transform: TransformFunction): string {
   // Создание композиции для подготовки предложения
   const prepareSentence: (sentence: SentenceElement) => string = pipe(
-    // Получение случайных пунктов из библиотеки, сохранение результатов в фрагменты
-    curry(makeResultsForFragments)(store),
     // Трансформация фрагментов с параметром «for»
     curry(transformFragments)(transform),
     // Превращение результатов фрагментов в строковое предложение
@@ -36,59 +29,6 @@ export function generateSentence(
 }
 
 /**
- * Генерирует результат для каждого фрагмента
- * @description Получает из шаблона внутри фрагмента дочерние элементы в виде функций,
- *   возвращающих случайных элемент из хранилища и строк, заранее внесённых в шаблон.
- *   Выполняет строки и сохраняет результат в виде массива в параметр «result» фрагмента
- * @param {DictionariesStore} store    Хранилище словарей, которые будут использоваться в преобразованиях
- * @param {SentenceElement}   sentence Элемент предложения
- */
-function makeResultsForFragments(store: DictionariesStore, sentence: SentenceElement): SentenceElement {
-  // Создание функции-маппера
-  const createMapperForFragments = (store: DictionariesStore, fragment: FragmentElement): FragmentElement => {
-    if (fragment.children.length === 0) {
-      return {
-        ...fragment,
-        result: [],
-      }
-    } else if (fragment.children.length > 1) {
-      // В момент когда элемент предложения попадает в эту функцию, в списке
-      // дочерних элементов каждого фрагмента должно быть только по одному шаблону
-      throw new Error('Во фрагменте должен быть один шаблон')
-    }
-
-    const template: TemplateElement = fragment.children[0]
-
-    const createMapperTemplateCildren = (
-      store: DictionariesStore,
-      templateChildren: string | RandomItemGetter | DictionaryItem,
-    ) => {
-      if (typeof templateChildren === 'function') {
-        return templateChildren(store)
-      }
-
-      return templateChildren
-    }
-
-    const result = template.children.map(curry(createMapperTemplateCildren)(store))
-
-    return {
-      ...fragment,
-      result,
-    }
-  }
-
-  const preparedFragments: FragmentElement[] = sentence.children.map(
-    curry(createMapperForFragments)(store)
-  )
-
-  return {
-    ...sentence,
-    children: preparedFragments
-  }
-}
-
-/**
  * Трансформирует фрагменты с параметром «for», в зависимости от фрагмента с
  * id, указанным в «for»
  * @param {TransformFunction} transform Функция трансформации
@@ -96,12 +36,17 @@ function makeResultsForFragments(store: DictionariesStore, sentence: SentenceEle
  * @param {SentenceElement}
  */
 function transformFragments(transform: TransformFunction, sentence: SentenceElement): SentenceElement {
-  const transformFragment = (fragment: FragmentElement, index: number, preparedFragments: FragmentElement[]) => {
-    // если у фрагмента нет параметра «for», ничего не делаем
+  const mapperOfFragment = (fragment: SentenceChild, index: number, preparedFragments: FragmentElement[]) => {
+    if (typeof fragment === 'string') {
+      return fragment
+    }
+
+    // Если у фрагмента нет параметра «for», ничего не делаем
     if (typeof fragment.props.for !== 'string') {
       return fragment
     }
 
+    // Поиск элемента с id
     const isPathEuqal = pathEq(['props', 'id'], fragment.props.for)
     const roleModelFragment: undefined | FragmentElement = preparedFragments.find(isPathEuqal)
 
@@ -110,15 +55,12 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
       return fragment
     }
 
-    // На этом этапе в каждом фрагменте должен быть получен результат шаблонов
-    if (fragment.result == null || roleModelFragment.result == null) {
-      throw new Error('Результат фрагментов должен быть получен')
+    if (fragment.children == null || roleModelFragment.children == null) {
+      return fragment
     }
 
     // Функция выбора последнего итема в списке результатов
-    // TODO: сделать нормальный выбор нужного итема с списке дочерних элементов
-    // шаблона для трансформации. Пока выбирается последний из списка.
-    const findLastNonStringItemInResult = findLastIndex((item: string | DictionaryItem): boolean => {
+    const findLastNonStringItemInChildren = findLastIndex((item: string | DictionaryItem): boolean => {
       if (typeof item === 'string') {
         return false
       }
@@ -127,15 +69,15 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
     })
 
     // Выбор трансформируемого итема
-    const itemTargetTransformIndex: number = findLastNonStringItemInResult(fragment.result)
-    const itemTargetTransform = fragment.result[itemTargetTransformIndex]
+    const itemTargetTransformIndex: number = findLastNonStringItemInChildren(fragment.children)
+    const itemTargetTransform = fragment.children[itemTargetTransformIndex]
     if (itemTargetTransform == null || !Array.isArray(itemTargetTransform)) {
       return fragment
     }
 
     // Выбор итема, на основе которого будет происходить трансформация
-    const itemRoleModelIndex: number = findLastNonStringItemInResult(roleModelFragment.result)
-    const itemRoleModel = roleModelFragment.result[itemTargetTransformIndex]
+    const itemRoleModelIndex: number = findLastNonStringItemInChildren(roleModelFragment.children)
+    const itemRoleModel = roleModelFragment.children[itemTargetTransformIndex]
     if (itemRoleModel == null || !Array.isArray(itemRoleModel)) {
       return fragment
     }
@@ -148,14 +90,14 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
 
     return {
       ...fragment,
-      result: pipe(
+      children: pipe(
         remove(itemTargetTransformIndex, 1),
         insert(itemTargetTransformIndex, itemTransformed),
-      )(fragment.result)
+      )(fragment.children)
     }
   }
 
-  const fragmentsTransformed: FragmentElement[] = sentence.children.map(transformFragment)
+  const fragmentsTransformed: SentenceChild[] = sentence.children.map(mapperOfFragment)
 
   return {
     ...sentence,
@@ -170,9 +112,13 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
  */
 function stringifySentence(sentence: SentenceElement): string {
   // Свёртка фрагментов
-  const foldFragments = reduce((out: string, fragment: FragmentElement) => {
-    const fragmentResult: undefined | (string | DictionaryItem)[] = fragment.result
-    if (fragmentResult == null) {
+  const foldFragments = reduce((out: string, fragment: string | FragmentElement) => {
+    if (typeof fragment === 'string') {
+      return out + ' ' + fragment
+    }
+
+    const fragmentChildren: undefined | (string | DictionaryItem)[] = fragment.children
+    if (fragmentChildren == null) {
       return out
     }
 
@@ -185,7 +131,7 @@ function stringifySentence(sentence: SentenceElement): string {
       return out + ' ' + item[0]
     }, '')
 
-    return out + foldResults(fragmentResult)
+    return out + foldResults(fragmentChildren)
   }, '')
 
   // Получение строкового представления результатов фрагментов
@@ -210,7 +156,7 @@ function stringifySentence(sentence: SentenceElement): string {
 
   // Добавление знака препинания, указанног ов параметре «stop»
   const formattedSentence: string = (
-    formatSentence(stringifiedResults) + sentence.props.stop || '.'
+    formatSentence(stringifiedResults)
   )
 
   return formattedSentence

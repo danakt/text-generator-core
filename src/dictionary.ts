@@ -20,6 +20,7 @@ export type DictionaryItem = [
  */
 export type RandomItemGetter = (store: DictionariesStore) => DictionaryItem
 
+
 /**
  * Добавляет словарь в хранилище
  * @param  {Dictionary|string[]} dictionary Словарь или массив со словами
