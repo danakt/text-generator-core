@@ -164,5 +164,5 @@ function formatSentence(sentence: string): string {
     trim,
     // Капиталайз
     (str: string) => str[0].toUpperCase() + str.substr(1),
-  )
+  )(sentence)
 }
