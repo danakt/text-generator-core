@@ -5,7 +5,7 @@ import { SentenceElement, FragmentElement, SentenceChild } from './elements'
 /**
  * Тип функции-транформатора
  */
-export type TransformFunction = (roleModel: DictionaryItem, target: DictionaryItem) => DictionaryItem
+export type TransformFunction = (props: { [prop: string]: any }, target: DictionaryItem) => DictionaryItem
 
 /**
  * Генерация предложения по шаблону и словарю
@@ -31,8 +31,8 @@ export function generateSentence(sentence: SentenceElement, transform: Transform
 }
 
 /**
- * Трансформирует фрагменты с параметром «for», в зависимости от фрагмента с
- * id, указанным в «for»
+ * Трансформирует фрагменты с параметром «for», в зависимости от  параметров
+ * фрагмента с id, указанным в «for»
  * @param {TransformFunction} transform Функция трансформации
  * @param {SentenceElement}   sentence  Элемент предложения
  * @param {SentenceElement}
@@ -68,28 +68,28 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
     })
 
     // Выбор трансформируемого итема
-    const itemTargetTransformIndex: number = findLastNonStringItemInChildren(fragment.children)
-    const itemTargetTransform = fragment.children[itemTargetTransformIndex]
-    if (itemTargetTransform == null || !Array.isArray(itemTargetTransform)) {
+    const itemTargetIndex: number = findLastNonStringItemInChildren(fragment.children)
+    const itemTarget = fragment.children[itemTargetIndex]
+    if (itemTarget == null || !Array.isArray(itemTarget)) {
       return fragment
     }
 
-    // Выбор итема, на основе которого будет происходить трансформация
+    // Поиск элемента, на основе параметров которого будет происходить трансформация
     const itemRoleModelIndex: number = findLastNonStringItemInChildren(roleModelFragment.children)
-    const itemRoleModel = roleModelFragment.children[itemTargetTransformIndex]
+    const itemRoleModel = roleModelFragment.children[itemTargetIndex]
     if (itemRoleModel == null || !Array.isArray(itemRoleModel)) {
       return fragment
     }
 
     // Применение транформации
     const itemTransformed: DictionaryItem = transform(
-      itemRoleModel,
-      itemTargetTransform,
+      itemRoleModel[1],
+      itemTarget,
     )
 
     return {
       ...fragment,
-      children: update(itemTargetTransformIndex, itemTransformed, fragment.children)
+      children: update(itemTargetIndex, itemTransformed, fragment.children)
     }
   }
 
