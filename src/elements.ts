@@ -61,7 +61,11 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: Elem
 
     const dictionaryItem: DictionaryItem = getRandomItem(
       propsFallBack.type,
-      Object.assign({}, propsFallBack.props, propsFallBack.id == null ? {} : { id: propsFallBack.id }),
+      {
+        ...propsFallBack.props,
+        id:  propsFallBack.id,
+        for: propsFallBack.for,
+      },
       propsFallBack.store
     )
 
