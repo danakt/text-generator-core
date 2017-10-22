@@ -1,6 +1,6 @@
-import { pathEq, pipe, curry, findLastIndex, insert, remove, reduce, replace, trim, update } from 'ramda'
+import { pipe, curry, reduce, replace, trim } from 'ramda'
 import { DictionariesStore, RandomItemGetter, DictionaryItem } from './dictionary'
-import { SentenceElement, FragmentElement, SentenceChild } from './elements'
+import { SentenceElement, FragmentElement, SentenceChild, FragmentChild, Element } from './elements'
 
 /**
  * Тип функции-транформатора
@@ -38,62 +38,58 @@ export function generateSentence(sentence: SentenceElement, transform: Transform
  * @param {SentenceElement}
  */
 function transformFragments(transform: TransformFunction, sentence: SentenceElement): SentenceElement {
-  const mapperOfFragment = (fragment: SentenceChild, index: number, preparedFragments: FragmentElement[]) => {
-    if (typeof fragment === 'string') {
-      return fragment
-    }
-
-    // Если у фрагмента нет параметра «for», или если у фрагмента нет дочерних элементов,
-    // ничего не делаем
-    if (typeof fragment.props.for !== 'string' || fragment.children == null) {
-      return fragment
-    }
-
-    // Поиск элемента с id
-    const checkPathEuqal = pathEq(['props', 'id'], fragment.props.for)
-    const roleModelFragment: undefined | FragmentElement = preparedFragments.find(checkPathEuqal)
-
-    // Если не был найден фрагмент с таким id, ничего не делаем
-    if (roleModelFragment == null || roleModelFragment.children == null) {
-      return fragment
-    }
-
-    // Функция выбора последнего итема в списке результатов
-    const findLastNonStringItemInChildren = findLastIndex((item: string | DictionaryItem): boolean => {
-      if (typeof item === 'string') {
-        return false
+  // Функция маппинга элементов предложения
+  const mapperOfFragment = function mapperOfFragment(
+    idMap: { [id: string]: DictionaryItem },
+    element: SentenceChild | FragmentChild,
+    index: number,
+  ): SentenceChild | FragmentChild {
+    if (!Array.isArray(element) || element[2] == null) {
+      // Рекурсионный маппинг дочерних элементов
+      if (typeof element === 'object' && !Array.isArray(element) && element.children != null) {
+        const children = element.children.map(curry(mapperOfFragment)(idMap))
+        return {
+          ...element,
+          children
+        } as SentenceChild
       }
 
-      return true
-    })
-
-    // Выбор трансформируемого итема
-    const itemTargetIndex: number = findLastNonStringItemInChildren(fragment.children)
-    const itemTarget = fragment.children[itemTargetIndex]
-    if (itemTarget == null || !Array.isArray(itemTarget)) {
-      return fragment
+      return element
     }
 
-    // Поиск элемента, на основе параметров которого будет происходить трансформация
-    const itemRoleModelIndex: number = findLastNonStringItemInChildren(roleModelFragment.children)
-    const itemRoleModel = roleModelFragment.children[itemTargetIndex]
-    if (itemRoleModel == null || !Array.isArray(itemRoleModel)) {
-      return fragment
+    // Трансформируем, если у элемента есть собственные свойства, которые
+    // нужно применить в трансформации
+    const selfTransformed: DictionaryItem = element[2].props != null
+      ? transform(element[2].props, element)
+      : element
+
+    // Проверяем наличие прааметра «for»
+    if (typeof element[2].for !== 'string') {
+      return selfTransformed
     }
+
+    // Искомый id
+    const searchId: string = element[2].for
+
+    // Получение параметров найденного по id элемента, для использования в трансформации
+    if (idMap[searchId] == null) {
+      return selfTransformed
+    }
+    const roleModelProps: { [prop: string]: any } = idMap[searchId][1]
 
     // Применение транформации
     const itemTransformed: DictionaryItem = transform(
-      itemRoleModel[1],
-      itemTarget,
+      roleModelProps,
+      selfTransformed,
     )
 
-    return {
-      ...fragment,
-      children: update(itemTargetIndex, itemTransformed, fragment.children)
-    }
+    return itemTransformed
   }
 
-  const fragmentsTransformed: SentenceChild[] = sentence.children.map(mapperOfFragment)
+  // Создание карты айдишников
+  const idMap: { [id: string]: DictionaryItem } = createIdMap(sentence)
+  // Маппинг элементов предложения
+  const fragmentsTransformed = sentence.children.map(curry(mapperOfFragment)(idMap)) as SentenceChild[]
 
   return {
     ...sentence,
@@ -153,4 +149,35 @@ function formatSentence(sentence: string): string {
     // Капиталайз
     (str: string) => str[0].toUpperCase() + str.substr(1),
   )(sentence)
+}
+
+/**
+ * Создаёт карту элементов по id
+ * @param  {SentenceElement} sentence Элемент предложения
+ * @return {object}
+ */
+function createIdMap(sentence: SentenceElement): { [id: string]: DictionaryItem } {
+  const idMapReducer = (map: { [id: string]: DictionaryItem }, child: SentenceChild | FragmentChild) => {
+    if (Array.isArray(child) && typeof child[0] === 'string' && typeof child[2].id === 'string') {
+      return {
+        ...map,
+        [child[2].id]: child
+      }
+    }
+
+    const childElement = child as void | string | Element
+
+    if (typeof childElement === 'object' && childElement.type === 'fragment') {
+      const fragment = childElement as FragmentElement
+
+      return reduce(idMapReducer, map, fragment.children)
+    }
+
+    return map
+  }
+
+  // Создание карты идентификаторов
+  const idMap: { [id: string]: DictionaryItem } = reduce(idMapReducer, {}, sentence.children)
+
+  return idMap
 }
