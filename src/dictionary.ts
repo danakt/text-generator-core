@@ -7,7 +7,7 @@ export interface DictionariesStore {
 
 /**
  * Пункт словаря
- * @description В первой ячейке находится слово, во второй — его параметры
+ * @description В первой ячейке находится слово, во второй — его свойства
  */
 export type DictionaryItem = [
   string,
@@ -76,10 +76,11 @@ export function createStore(mapOfDictionaries: {
 /**
  * Возвращает случайное слово из указанного словаря
  * @param  {string}            name  Название словаря, в котором будет осуществляться поиск случайного слова
+ * @param  {object}            props Свойства, которые будут добавляться к полученному из словаря слову
  * @param  {DictionariesStore} store Хранилище, содержащее словарь
  * @return {DictionaryItem}
  */
-function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryItem {
+function getRandomItemPlane(name: string, props: { [prop: string]: any }, store: DictionariesStore): DictionaryItem {
   if (!store.hasOwnProperty(name)) {
     throw new Error('Отсуствует запрашиваемый словарь')
   }
@@ -88,7 +89,15 @@ function getRandomItemPlane(name: string, store: DictionariesStore): DictionaryI
   const randomIndex: number = store[name].length * Math.random() | 0
   const randomItem: DictionaryItem = store[name][randomIndex]
 
-  return randomItem
+  // Присоединение свойств, полученных из аргументов функции
+  const itemWithMergedProps: DictionaryItem = [
+    randomItem[0], {
+      ...randomItem[1],
+      ...props,
+    },
+  ]
+
+  return itemWithMergedProps
 }
 
 /**
