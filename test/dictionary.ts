@@ -68,7 +68,7 @@ describe('Получение случайного слова из словаря
         const initDictArray = ['раз', 'два', 'три']
 
         const store = addDictionary(initDictArray, 'словарь', {})
-        const randomItem = getRandomItem('словарь', store)
+        const randomItem = getRandomItem('словарь', {}, store)
 
         expect(initDictArray).to.include(randomItem[0])
     })
