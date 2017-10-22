@@ -16,9 +16,13 @@ describe('Создание элемента шаблона', () => {
     const sentenceTempalte = (
       createElement('sentence', { someprop: 'somevalue' },
         createElement('fragment', null,
-          ['Элемент словаря', { someprop: 'somevalue' }],
+          ['Элемент словаря', { someprop: 'somevalue' }, {}],
           'Обычный текст',
-          createElement('word', { type: 'словарь', store: store, id: 'id', for: 'id', props: { prop: 'value' } })
+          createElement('word', {
+            type: 'словарь',
+            store: store,
+            props: { prop: 'value' }
+          })
         )
       )
     )
@@ -30,15 +34,9 @@ describe('Создание элемента шаблона', () => {
         type: 'fragment',
         props: {},
         children: [
-          ['Элемент словаря', {
-            'someprop': 'somevalue'
-          }],
+          ['Элемент словаря', { 'someprop': 'somevalue' }, {}],
           'Обычный текст',
-          ['Элемент словаря', {
-            id: 'id',
-            for: 'id',
-            prop: 'value',
-          }]
+          ['Элемент словаря', { prop: 'value' }, { type: 'словарь', store: store, props: { prop: 'value' } }]
         ]
       }]
     })
@@ -54,7 +52,7 @@ describe('Создание элемента шаблона', () => {
     const sentenceTempalte = (
       <sentence someprop="somevalue">
         <fragment>
-          {['Элемент словаря', { someprop: 'somevalue' }]}
+          {['Элемент словаря', { someprop: 'somevalue' }, {}]}
           Обычный текст
           <word type="словарь" store={store} id="id" for="id" props={{ prop: 'value' }}/>
         </fragment>
@@ -68,14 +66,14 @@ describe('Создание элемента шаблона', () => {
         type: 'fragment',
         props: {},
         children: [
-          ['Элемент словаря', {
-            'someprop': 'somevalue'
-          }],
+          ['Элемент словаря', { 'someprop': 'somevalue' }, {}],
           'Обычный текст',
-          ['Элемент словаря', {
+          ['Элемент словаря', { prop: 'value' }, {
+            store,
+            type: 'словарь',
+            props: { prop: 'value' },
             id: 'id',
             for: 'id',
-            prop: 'value',
           }]
         ]
       }]
