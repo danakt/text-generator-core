@@ -42,9 +42,9 @@ export interface FragmentElement extends Element {
  * @param {Object}           props    Параметры элемента
  * @param {...object|string} children Дочерние элементы
  */
-export function createElement(type: 'word', props?: {}): DictionaryItem
-export function createElement(type: 'sentence', props?: {}, ...children: FragmentElement[]): SentenceElement
-export function createElement(type: 'fragment', props?: {}, ...children: FragmentChild[]): FragmentElement
+export function createElement(type: 'word', props?: null | {}): DictionaryItem
+export function createElement(type: 'sentence', props?: null |{}, ...children: FragmentElement[]): SentenceElement
+export function createElement(type: 'fragment', props?: null | {}, ...children: FragmentChild[]): FragmentElement
 export function createElement(type: TypeOfElement, props?: {}, ...children: ElementChild[]): Element | DictionaryItem {
   // Фоллбэк параметров
   const propsFallBack: { [prop: string]: any } = props == null ? {} : props
