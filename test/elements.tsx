@@ -18,7 +18,7 @@ describe('Создание элемента шаблона', () => {
         createElement('fragment', null,
           ['Элемент словаря', { someprop: 'somevalue' }],
           'Обычный текст',
-          createElement('word', { type: 'словарь', store: store, props: { id: 'id' } })
+          createElement('word', { type: 'словарь', store: store, id: 'id', for: 'id', props: { prop: 'value' } })
         )
       )
     )
@@ -35,7 +35,9 @@ describe('Создание элемента шаблона', () => {
           }],
           'Обычный текст',
           ['Элемент словаря', {
-            id: 'id'
+            id: 'id',
+            for: 'id',
+            prop: 'value',
           }]
         ]
       }]
@@ -54,7 +56,7 @@ describe('Создание элемента шаблона', () => {
         <fragment>
           {['Элемент словаря', { someprop: 'somevalue' }]}
           Обычный текст
-          <word type="словарь" store={store} id="id"/>
+          <word type="словарь" store={store} id="id" for="id" props={{ prop: 'value' }}/>
         </fragment>
       </sentence>
     )
@@ -71,7 +73,9 @@ describe('Создание элемента шаблона', () => {
           }],
           'Обычный текст',
           ['Элемент словаря', {
-            id: 'id'
+            id: 'id',
+            for: 'id',
+            prop: 'value',
           }]
         ]
       }]
