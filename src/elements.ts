@@ -3,6 +3,7 @@
  * @description Функционал реализован для JSX-шаблонизатора. Элементы могут быть только двух типов:
  * «sentence» и «fragment». Элементы должны следовать иерархии: sentence —> fragment
  */
+import { update } from 'ramda'
 import { getRandomItem, DictionaryItem, RandomItemGetter, DictionariesStore } from './dictionary'
 
 /** Типы элементов export */
@@ -60,11 +61,9 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: Elem
     }
 
     const dictionaryItem: DictionaryItem = getRandomItem(propsFallBack.type, propsFallBack.props, propsFallBack.store)
+    const updatedItem = update(2, propsFallBack, dictionaryItem) as DictionaryItem
 
-    return [
-      ...dictionaryItem,
-      propsFallBack,
-    ] as DictionaryItem
+    return updatedItem
   }
 
   // Создание элементов «sentence» и «fragment»
