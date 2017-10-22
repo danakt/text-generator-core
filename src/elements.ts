@@ -59,7 +59,11 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: Elem
       throw new Error('Элемент типа «word» должен иметь параметр «store»')
     }
 
-    const dictionaryItem: DictionaryItem = getRandomItem(propsFallBack.type, propsFallBack.props, propsFallBack.store)
+    const dictionaryItem: DictionaryItem = getRandomItem(
+      propsFallBack.type,
+      Object.assign({}, propsFallBack.props, propsFallBack.id == null ? {} : { id: propsFallBack.id }),
+      propsFallBack.store
+    )
 
     return dictionaryItem
   }
