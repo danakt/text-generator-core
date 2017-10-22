@@ -7,10 +7,12 @@ export interface DictionariesStore {
 
 /**
  * Пункт словаря
- * @description В первой ячейке находится слово, во второй — его свойства
+ * @description В первой ячейке находится слово, во второй — его свойства,
+ * в третей — параметры шаблонизации
  */
 export type DictionaryItem = [
   string,
+  { [prop: string]: any },
   { [prop: string]: any }
 ]
 
@@ -94,7 +96,7 @@ function getRandomItemPlane(name: string, props: { [prop: string]: any }, store:
     randomItem[0], {
       ...randomItem[1],
       ...props,
-    },
+    }, {}
   ]
 
   return itemWithMergedProps
