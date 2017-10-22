@@ -59,17 +59,12 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: Elem
       throw new Error('Элемент типа «word» должен иметь параметр «store»')
     }
 
-    const dictionaryItem: DictionaryItem = getRandomItem(
-      propsFallBack.type,
-      {
-        ...propsFallBack.props,
-        id:  propsFallBack.id,
-        for: propsFallBack.for,
-      },
-      propsFallBack.store
-    )
+    const dictionaryItem: DictionaryItem = getRandomItem(propsFallBack.type, propsFallBack.props, propsFallBack.store)
 
-    return dictionaryItem
+    return [
+      ...dictionaryItem,
+      propsFallBack,
+    ] as DictionaryItem
   }
 
   // Создание элементов «sentence» и «fragment»
