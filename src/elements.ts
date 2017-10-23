@@ -61,7 +61,8 @@ export function createElement(type: TypeOfElement, props?: {}, ...children: Elem
     }
 
     const dictionaryItem: DictionaryItem = getRandomItem(propsFallBack.type, propsFallBack.props, propsFallBack.store)
-    const updatedItem = update(2, propsFallBack, dictionaryItem) as DictionaryItem
+    const { store, ...propsWithoutState } = propsFallBack
+    const updatedItem = update(2, propsWithoutState, dictionaryItem) as DictionaryItem
 
     return updatedItem
   }
