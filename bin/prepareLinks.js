@@ -1,5 +1,3 @@
-const fs = require('fs')
-
 // Подготовка списков слов -----------------------------------------------------
 module.exports = function prepareLinks(list) {
     // Обнуляем список
