@@ -37,7 +37,7 @@ export function generateSentence(sentence: SentenceElement, transform: Transform
  * @param {SentenceElement}   sentence  Элемент предложения
  * @param {SentenceElement}
  */
-function transformFragments(transform: TransformFunction, sentence: SentenceElement): SentenceElement {
+export function transformFragments(transform: TransformFunction, sentence: SentenceElement): SentenceElement {
   // Функция маппинга элементов предложения
   const mapperOfFragment = function mapperOfFragment(
     idMap: { [id: string]: DictionaryItem },
@@ -102,7 +102,7 @@ function transformFragments(transform: TransformFunction, sentence: SentenceElem
  * @param  {SentenceElement} sentence Элемент предложения
  * @return {string}
  */
-function stringifySentence(sentence: SentenceElement): string {
+export function stringifySentence(sentence: SentenceElement): string {
   // Свёртка фрагментов
   const foldFragments = reduce((out: string, fragment: string | FragmentElement) => {
     if (typeof fragment === 'string') {
@@ -136,7 +136,7 @@ function stringifySentence(sentence: SentenceElement): string {
  * @param  {string} sentence Строковое предложение
  * @return {string}
  */
-function formatSentence(sentence: string): string {
+export function formatSentence(sentence: string): string {
   return pipe(
     // Удаление повторяющихся запятых и пробелов вокруг запятых
     replace(/\s*,+\s*,+\s*/g, ', '),
@@ -156,7 +156,7 @@ function formatSentence(sentence: string): string {
  * @param  {SentenceElement} sentence Элемент предложения
  * @return {object}
  */
-function createIdMap(sentence: SentenceElement): { [id: string]: DictionaryItem } {
+export function createIdMap(sentence: SentenceElement): { [id: string]: DictionaryItem } {
   const idMapReducer = (map: { [id: string]: DictionaryItem }, child: SentenceChild | FragmentChild) => {
     if (Array.isArray(child) && typeof child[0] === 'string' && typeof child[2].id === 'string') {
       return {
