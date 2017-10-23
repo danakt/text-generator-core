@@ -36,7 +36,7 @@ describe('Создание элемента шаблона', () => {
         children: [
           ['Элемент словаря', { 'someprop': 'somevalue' }, {}],
           'Обычный текст',
-          ['Элемент словаря', { prop: 'value' }, { type: 'словарь', store: store, props: { prop: 'value' } }]
+          ['Элемент словаря', { prop: 'value' }, { type: 'словарь', props: { prop: 'value' } }]
         ]
       }]
     })
@@ -69,7 +69,6 @@ describe('Создание элемента шаблона', () => {
           ['Элемент словаря', { 'someprop': 'somevalue' }, {}],
           'Обычный текст',
           ['Элемент словаря', { prop: 'value' }, {
-            store,
             type: 'словарь',
             props: { prop: 'value' },
             id: 'id',
