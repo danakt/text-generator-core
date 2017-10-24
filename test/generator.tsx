@@ -92,6 +92,10 @@ describe('Генерация предложения', () => {
   })
 })
 
+/**
+ * Проврека примерения трансформации к элементам
+ * @function transformFragments
+ */
 describe('Проверка трансформации элементов', () => {
   it('Трансформация элементов', () => {
     const fragmentsTransformed = transformFragments(transformItem, mockSentenceTemplate)
