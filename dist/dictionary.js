@@ -42,3 +42,4 @@ function getRandomItemPlane(name, props, store) {
     return itemWithMergedProps;
 }
 exports.getRandomItem = ramda_1.curry(getRandomItemPlane);
+//# sourceMappingURL=dictionary.js.map
