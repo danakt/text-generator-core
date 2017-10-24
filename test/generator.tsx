@@ -1,8 +1,12 @@
-import { expect }               from 'chai'
-import { map, toPairs, curry }  from 'ramda'
-import { DictionaryItem }       from '../src/dictionary'
-import { createElement }        from '../src/elements'
-import { generateSentence }     from '../src/generator'
+import { expect } from 'chai'
+import { map, toPairs, curry } from 'ramda'
+import { DictionaryItem } from '../src/dictionary'
+import { createElement } from '../src/elements'
+import {
+  generateSentence,
+  createIdMap,
+  formatSentence,
+} from '../src/generator'
 
 /**
  * Тип правил трансформации
@@ -17,8 +21,8 @@ const mockTransformRules = {
   // Изменения по роду
   'род': [
     // Краткие прилагательные:
-    [/([^л])ен$/, { 'м': '$1ен', 'ж': '$1на',  'с': '$1но' }],
-    [/([л])ен$/,  { 'м': '$1ен', 'ж': '$1ьна', 'с': '$1ьно' }],
+    [/([^л])ен$/, { 'м': '$1ен', 'ж': '$1на', 'с': '$1но' }],
+    [/([л])ен$/, { 'м': '$1ен', 'ж': '$1ьна', 'с': '$1ьно' }],
     // Прилагательные
     [/вый$/, { 'м': 'вый', 'ж': 'вая', 'с': 'вое' }],
     [/ный$/, { 'м': 'ный', 'ж': 'ная', 'с': 'ное' }],
@@ -51,7 +55,7 @@ const transformItem = curry(function transformItem(
     const value: string = prop[1]
 
     return transformRules[propname].reduce((accum: string, rule: TansformRule): string => {
-      const regExpr: RegExp  = rule[0]
+      const regExpr: RegExp = rule[0]
       const replacer: string = rule[1][value]
 
       return accum.replace(regExpr, replacer)
@@ -83,5 +87,19 @@ describe('Генерация предложения', () => {
   it('Проверка композиции генератора', () => {
     const shouldBe = 'Трансцендентная индукция, возводя, отделяет апперцепцию.'
     expect(generateSentence(mockSentenceTemplate, transformItem)).to.eq(shouldBe)
+  })
+})
+
+/**
+ * Создание карты идентификаторов
+ * @function createIdMap
+ */
+describe('Создание карты элементов словаря по идентификаторам', () => {
+  it('Создание карты и проврека на эквивалентность', () => {
+    const idMap: { [id: string]: DictionaryItem } = createIdMap(mockSentenceTemplate)
+
+    expect(idMap).to.deep.eq({
+      word1: ['индукция', { 'род': 'ж' }, { id: 'word1', type: 'существительное' }]
+    })
   })
 })
