@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
+    "watch": true,
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,11 +14,8 @@
     "jsx": "react",
     "jsxFactory": "createElement"
   },
-  "include": [
-    "src/**/*"
-  ],
   "exclude": [
-    "node_modules"
-  ],
-  "compileOnSave": true
+    "node_modules",
+    "./test/"
+  ]
 }
