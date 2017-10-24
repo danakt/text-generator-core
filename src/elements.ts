@@ -6,7 +6,7 @@
 import { update } from 'ramda'
 import { getRandomItem, DictionaryItem, RandomItemGetter, DictionariesStore } from './dictionary'
 
-/** Типы элементов export */
+/** Типы элементов */
 export type TypeOfElement = 'sentence' | 'fragment' | 'word'
 
 /** Дочерний элемент фрагмента */
