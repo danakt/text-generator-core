@@ -2,10 +2,9 @@
   "name": "text-generator-core",
   "version": "1.0.0",
   "description": "Движок для генерации случайного текста по шаблонам",
-  "main": "getText.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c",
-    "test:watch": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c --watch"
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register -c"
   },
   "author": "Danakt Frost <mail@danakt.ru>",
   "license": "MIT",
@@ -16,13 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/danakt/text-generator-core.git"
   },
-  "keywords": [
-    "text-generator",
-    "generator",
-    "text",
-    "русский язык",
-    "генератор текста"
-  ],
+  "keywords": ["text-generator", "generator", "text", "русский язык", "генератор текста"],
   "bugs": {
     "url": "https://github.com/danakt/text-generator-core/issues"
   },
