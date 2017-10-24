@@ -8,7 +8,7 @@ import { SentenceElement, FragmentElement, SentenceChild, FragmentChild, Element
 export type TransformFunction = (props: { [prop: string]: any }, target: DictionaryItem) => DictionaryItem
 
 /**
- * Генерация предложения по шаблону и словарю
+ * Генерирует предложение по шаблону
  * @param  {SentenceElement}   sentence  Элемент предложени, содержащий в себе шаблон
  * @param  {TransformFunction} transform Функция трансформации элементов, например для
  *  изменения склонения или рода
