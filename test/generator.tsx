@@ -4,6 +4,7 @@ import { DictionaryItem } from '../src/dictionary'
 import { createElement } from '../src/elements'
 import {
   generateSentence,
+  stringifySentence,
   createIdMap,
   formatSentence,
 } from '../src/generator'
@@ -91,19 +92,17 @@ describe('Генерация предложения', () => {
 })
 
 /**
- * Создание карты идентификаторов
- * @function createIdMap
+ * Проврека превращения шаблона в строку
+ * @function stringifySentence
  */
-describe('Создание карты элементов словаря по идентификаторам', () => {
-  it('Создание карты и проврека на эквивалентность', () => {
-    const idMap: { [id: string]: DictionaryItem } = createIdMap(mockSentenceTemplate)
+describe('Певращение шаблона в строку', () => {
+  it('Сравнение с результатом', () => {
+    // Результат приведения к строке сырого шаблона без трансформаций и форматирования
+    const result = 'трансцендентный индукция ,  возводя ,  отделяет апперцепция .'
 
-    expect(idMap).to.deep.eq({
-      word1: ['индукция', { 'род': 'ж' }, { id: 'word1', type: 'существительное' }]
-    })
+    expect(stringifySentence(mockSentenceTemplate).trim()).to.eq(result)
   })
 })
-
 
 /**
  * Форматирование строкового предложения
@@ -143,5 +142,19 @@ describe('Форматирование строкового предложени
     const output = 'Трансцендентная индукция, возводя, отделяет апперцепцию.'
 
     expect(formatSentence(input)).is.eq(output)
+  })
+})
+
+/**
+ * Создание карты идентификаторов
+ * @function createIdMap
+ */
+describe('Создание карты элементов словаря по идентификаторам', () => {
+  it('Создание карты и проврека на эквивалентность', () => {
+    const idMap: { [id: string]: DictionaryItem } = createIdMap(mockSentenceTemplate)
+
+    expect(idMap).to.deep.eq({
+      word1: ['индукция', { 'род': 'ж' }, { id: 'word1', type: 'существительное' }]
+    })
   })
 })
