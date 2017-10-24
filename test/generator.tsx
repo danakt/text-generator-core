@@ -4,6 +4,7 @@ import { DictionaryItem } from '../src/dictionary'
 import { createElement } from '../src/elements'
 import {
   generateSentence,
+  transformFragments,
   stringifySentence,
   createIdMap,
   formatSentence,
@@ -72,7 +73,7 @@ const transformItem = curry(function transformItem(
  */
 const mockSentenceTemplate = (
   <sentence>
-    <fragment>{['трансцендентный', {}, { "for": "word1", "type": "прилагательное" }]}</fragment>
+    <fragment>{['трансцендентный', {}, { for: "word1", type: "прилагательное" }]}</fragment>
     <fragment>{['индукция', { 'род': 'ж' }, { 'id': 'word1', 'type': 'существительное' }]}</fragment>
     <fragment>, {['возводя', {}, { 'type': 'деепричастие' }]}, {['отделяет', {}, { 'type': 'глагол' }]}</fragment>
     <fragment>{['апперцепция', { 'род': 'ж', 'падеж': 'дательный' }, { 'type': 'существительное', 'props': { 'падеж': 'дательный' } }]}</fragment>
@@ -88,6 +89,52 @@ describe('Генерация предложения', () => {
   it('Проверка композиции генератора', () => {
     const shouldBe = 'Трансцендентная индукция, возводя, отделяет апперцепцию.'
     expect(generateSentence(mockSentenceTemplate, transformItem)).to.eq(shouldBe)
+  })
+})
+
+describe('Проверка трансформации элементов', () => {
+  it('Трансформация элементов', () => {
+    const fragmentsTransformed = transformFragments(transformItem, mockSentenceTemplate)
+    const result = {
+      type: 'sentence',
+      props: {},
+      children: [
+        {
+          type: 'fragment',
+          props: {},
+          children: [
+            ['трансцендентная', { род: 'ж' }, { for: 'word1', type: 'прилагательное' }]
+          ]
+        },
+        {
+          type: 'fragment',
+          props: {},
+          children: [
+            ['индукция', { род: 'ж' }, { id: 'word1', type: 'существительное' }]
+          ]
+        },
+        {
+          type: 'fragment',
+          props: {},
+          children: [
+            ', ',
+            ['возводя', {}, { type: 'деепричастие' }],
+            ', ',
+            ['отделяет', {}, { type: 'глагол' }]
+          ]
+        },
+        {
+          type: 'fragment',
+          props: {},
+          children: [
+            ['апперцепцию', { род: 'ж', падеж: 'дательный' }, { type: 'существительное', props: { падеж: 'дательный' } }]
+          ]
+        },
+        '.'
+      ]
+    }
+
+    expect(fragmentsTransformed).to.deep.eq(result)
   })
 })
 
@@ -154,7 +201,7 @@ describe('Создание карты элементов словаря по и�
     const idMap: { [id: string]: DictionaryItem } = createIdMap(mockSentenceTemplate)
 
     expect(idMap).to.deep.eq({
-      word1: ['индукция', { 'род': 'ж' }, { id: 'word1', type: 'существительное' }]
+      word1: ['индукция', { род: 'ж' }, { id: 'word1', type: 'существительное' }]
     })
   })
 })
