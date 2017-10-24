@@ -1,12 +1,7 @@
 import { curry, pipe, mapObjIndexed, values } from 'ramda'
 
-/** Хранилище словарей */
-export interface DictionariesStore {
-  [name: string]: DictionaryItem[]
-}
-
 /**
- * Пункт словаря
+ * Элемент словаря
  * @description В первой ячейке находится слово, во второй — его свойства,
  * в третей — параметры шаблонизации
  */
@@ -16,12 +11,16 @@ export type DictionaryItem = [
   { [prop: string]: any }
 ]
 
+/** Хранилище словарей */
+export interface DictionariesStore {
+  [name: string]: DictionaryItem[]
+}
+
 /**
  * Функция, полученная в результате вызова каррированного getRandomItem с
  * указанием библиотеки
  */
 export type RandomItemGetter = (store: DictionariesStore) => DictionaryItem
-
 
 /**
  * Добавляет словарь в хранилище
