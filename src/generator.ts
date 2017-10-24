@@ -139,7 +139,7 @@ export function stringifySentence(sentence: SentenceElement): string {
 export function formatSentence(sentence: string): string {
   return pipe(
     // Удаление повторяющихся запятых и пробелов вокруг запятых
-    replace(/\s*,+\s*,+\s*/g, ', '),
+    replace(/(\s*,+\s*)+/g, ', '),
     // Пробелы вокруг прочих знаков припинания
     replace(/\s+([,.!?])\s*/g, '$1 '),
     // Удаление множественных пробелов
