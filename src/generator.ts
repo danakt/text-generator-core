@@ -14,11 +14,15 @@ export type TransformFunction = (props: { [prop: string]: any }, target: Diction
  *  изменения склонения или рода
  * @return {string}
  */
-export function generateSentence(sentence: SentenceElement, transform: TransformFunction): string {
+export function generateSentence(sentence: SentenceElement, transform?: TransformFunction): string {
+  const transformFallback = typeof transform === 'function'
+    ? curry(transformFragments)(transform)
+    : s => s
+
   // Создание композиции для подготовки предложения
   const prepareSentence: (sentence: SentenceElement) => string = pipe(
     // Трансформация фрагментов с параметром «for»
-    curry(transformFragments)(transform),
+    transformFallback,
     // Превращение результатов фрагментов в строковое предложение
     stringifySentence,
     // Форматирование строкового предложения
