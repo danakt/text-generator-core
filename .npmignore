@@ -1,4 +1,6 @@
 test/
+src/
+tsconfig.json
 .vscode/
 .travis.yml
 .editorconfig
