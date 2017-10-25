@@ -108,3 +108,24 @@ declare namespace TextGeneratorCore {
    */
   function generateSentence(sentence: SentenceElement, transform?: TransformFunction): string
 }
+
+/**
+ * JSX-элементы
+ */
+declare global {
+  namespace JSX {
+    type Element = TextGeneratorCore.Element & TextGeneratorCore.SentenceElement & TextGeneratorCore.FragmentElement & TextGeneratorCore.DictionaryItem
+
+    interface IntrinsicElements {
+      word: {
+        id?: string,
+        for?: string,
+        props?: { [prop: string]: any },
+        type: string,
+        store: TextGeneratorCore.DictionariesStore,
+      }
+      sentence: {}
+      fragment: {}
+    }
+  }
+}
