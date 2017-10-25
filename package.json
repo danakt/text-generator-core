@@ -16,7 +16,13 @@
     "type": "git",
     "url": "git+https://github.com/danakt/text-generator-core.git"
   },
-  "keywords": ["text-generator", "generator", "text", "русский язык", "генератор текста"],
+  "keywords": [
+    "text-generator",
+    "generator",
+    "text",
+    "русский язык",
+    "генератор текста"
+  ],
   "bugs": {
     "url": "https://github.com/danakt/text-generator-core/issues"
   },
